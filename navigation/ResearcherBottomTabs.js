@@ -9,15 +9,17 @@ import researcherSpeciesRequests from '../screens/researcherSpeciesRequests';
 import addSpeciesRequest from '../screens/addSpeciesRequest';
 import SearchSpecies from '../screens/SearchSpecies';
 import SpeciesReports from '../screens/SpeciesReports';
+import ResearcherFavorites from '../screens/researcherFavorites';
+
 
 const Tab = createBottomTabNavigator();
 
 // Dummy screens for demo
-const DummyScreen = ({ name }) => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text style={{ fontSize: 22 }}>{name}</Text>
-  </View>
-);
+// const DummyScreen = ({ name }) => (
+//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//     <Text style={{ fontSize: 22 }}>{name}</Text>
+//   </View>
+// );
 
 // Custom Tab Bar
 const  CustomTabBar = ({ state, descriptors, navigation }) => {
@@ -101,7 +103,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Requests" component={researcherSpeciesRequests} />
       <Tab.Screen name="Search" component={SearchSpecies} />
       <Tab.Screen name="Reports" component={SpeciesReports} />
-      <Tab.Screen name="Favorites" children={() => <DummyScreen name="Favorites" />} />
+      <Tab.Screen name="Favorites" component={ResearcherFavorites} />
     </Tab.Navigator>
   );
 }

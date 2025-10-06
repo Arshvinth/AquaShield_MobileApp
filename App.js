@@ -17,6 +17,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 import AddSpeciesRequest from './screens/addSpeciesRequest';
+import ViewOneSpecies from './screens/viewOneSpecies';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,10 +32,15 @@ export default function App() {
           options={{ headerShown: false }}
         />
         {/* Extra screen for new species request */}
-        <Stack.Screen
+        <Stack.Screen 
           name="AddSpeciesRequest"
           component={AddSpeciesRequest}
           options={{ title: 'Add Species Request' }}
+        />
+        <Stack.Screen
+          name="ViewOneSpecies"
+          component={ViewOneSpecies}
+          options={{ headerShown: true }}
         />
       </Stack.Navigator>
     </NavigationContainer>
