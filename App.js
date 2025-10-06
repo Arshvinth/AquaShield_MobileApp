@@ -11,13 +11,14 @@
 //     </NavigationContainer>
 //   );
 // }
- 
+
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 import AddSpeciesRequest from './screens/addSpeciesRequest';
 import ViewOneSpecies from './screens/viewOneSpecies';
+import ResearcherNotifications from './screens/researcherNotifications';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,15 @@ export default function App() {
           name="ViewOneSpecies"
           component={ViewOneSpecies}
           options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name="ResearcherNotifications"
+          component={ResearcherNotifications}
+          options={{
+            headerShown: true,
+            headerTitle: 'Notifications',
+            headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

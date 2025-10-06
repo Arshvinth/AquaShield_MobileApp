@@ -1,201 +1,200 @@
 
-// import React from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import Layout from '../components/layout/layout';
-
-// const Dashboard = ({ navigation }) => {
-//   const cards = [
-//     { title: 'View Reports', action: () => alert('Navigate to Reports') },
-//     { title: 'Add New Request', action: () => alert('Navigate to Requests') },
-//     { title: 'View Favorites', action: () => alert('Navigate to Favorites') },
-//     { title: 'Search Data', action: () => alert('Navigate to Search') },
-//   ];
-
-//   return (
-//     <Layout>
-//       {cards.map((card, index) => (
-//         <TouchableOpacity
-//           key={index}
-//           style={styles.box}
-//           onPress={card.action}
-//           activeOpacity={0.8}
-//         >
-//           <Text style={styles.text}>Welcome, Researcher!</Text>
-//           <Text style={styles.button}>{card.title}</Text>
-//         </TouchableOpacity>
-//       ))}
-//     </Layout>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   box: {
-//     padding: 20,
-//     backgroundColor: '#AFD3E2',
-//     borderRadius: 15,
-//     marginBottom: 20,
-//     shadowColor: '#146C94',
-//     shadowOffset: { width: 0, height: 5 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 8,
-//     elevation: 5,
-//   },
-//   text: {
-//     fontSize: 18,
-//     fontWeight: '600',
-//     color: '#146C94',
-//     marginBottom: 10,
-//   },
-//   button: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     color: 'white',
-//     backgroundColor: '#19A7CE',
-//     textAlign: 'center',
-//     paddingVertical: 10,
-//     borderRadius: 10,
-//   },
-// });
-
-// export default Dashboard;
-
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import Layout from '../components/layout/layout';
-import { BarChart, LineChart, PieChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
-import Footer from '../components/layout/footer.js';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { BarChart, LineChart, PieChart } from "react-native-chart-kit";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Layout from "../components/layout/layout";
+import Footer from "../components/layout/footer";
 
 const screenWidth = Dimensions.get("window").width;
 
 const Dashboard = () => {
-  // Sample data from your screenshot
   const stats = [
-    { title: 'Total Illegal reports submitted', value: 156, color: '#19A7CE' },
-    { title: 'Actions Taken for submitted illegal reports', value: 54, color: '#8BC34A' },
-    { title: 'Total Endangered species', value: 50, color: '#03DAC5' },
-    { title: 'Pending species request', value: 2, color: '#FFEB3B' },
+    {
+      title: "Total Illegal reports submitted",
+      value: 156,
+      color: "#19A7CE",
+      icon: <MaterialCommunityIcons name="clipboard-check" size={24} color="#146C94" />,
+    },
+    {
+      title: "Actions Taken for submitted illegal reports",
+      value: 54,
+      color: "#4CAF50",
+      icon: <Ionicons name="checkmark-circle" size={24} color="#146C94" />,
+    },
+    {
+      title: "Total Endangered species",
+      value: 50,
+      color: "#146C94",
+      icon: <MaterialCommunityIcons name="alert-circle" size={24} color="#FFFFFF" />,
+    },
+    {
+      title: "Pending species request",
+      value: 2,
+      color: "#FFD54F",
+      icon: <Ionicons name="time-outline" size={24} color="#146C94" />,
+    },
   ];
 
   const mostReportedSpecies = {
-    labels: ['Tuna', 'Salmon', 'Cod', 'Shark', 'Mackerel'],
-    data: [22, 18, 15, 12, 8]
+    labels: ["Tuna", "Salmon", "Cod", "Shark", "Mackerel"],
+    datasets: [{ data: [22, 18, 15, 12, 8] }],
   };
 
   const incidentTrends = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    data: [50, 55, 53, 57, 60, 70]
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [{ data: [50, 55, 53, 57, 60, 70] }],
   };
 
   const speciesOverview = [
-    { name: 'Endangered', population: 20, color: '#FF5722', legendFontColor: '#333', legendFontSize: 12 },
-    { name: 'Vulnerable', population: 60, color: '#2196F3', legendFontColor: '#333', legendFontSize: 12 },
-    { name: 'Extinct', population: 20, color: '#4CAF50', legendFontColor: '#333', legendFontSize: 12 },
+    { name: "Endangered", population: 20, color: "#FF7043", legendFontColor: "#333", legendFontSize: 14 },
+    { name: "Vulnerable", population: 60, color: "#2196F3", legendFontColor: "#333", legendFontSize: 14 },
+    { name: "Extinct", population: 20, color: "#4CAF50", legendFontColor: "#333", legendFontSize: 14 },
   ];
+
+  const chartConfig = {
+    backgroundGradientFrom: "#FFFFFF",
+    backgroundGradientTo: "#FFFFFF",
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(20, 108, 148, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(20, 108, 148, ${opacity})`,
+    propsForBackgroundLines: {
+      strokeDasharray: "",
+      strokeWidth: 0.4,
+      stroke: "#AFD3E2",
+    },
+    propsForLabels: {
+      fontSize: 12,
+    },
+  };
 
   return (
     <Layout>
-      <ScrollView style={{ paddingHorizontal:3 }}>
-        {/* Stats Cards */}
+      <ScrollView style={styles.container}>
+        {/* --- Top Stats Section --- */}
         <View style={styles.statsContainer}>
           {stats.map((item, idx) => (
-            <View key={idx} style={[styles.card, { backgroundColor: item.color }]}>
-              <Text style={styles.cardValue}>{item.value.toString().padStart(2, '0')}</Text>
+            <View key={idx} style={[styles.card, { borderColor: item.color }]}>
+              <View style={[styles.iconContainer, { backgroundColor: "#AFD3E2" }]}>{item.icon}</View>
+              <Text style={[styles.cardValue, { color: item.color }]}>
+                {item.value.toString().padStart(2, "0")}
+              </Text>
               <Text style={styles.cardTitle}>{item.title}</Text>
             </View>
           ))}
         </View>
 
-        {/* Most Reported Species */}
+        {/* --- Bar Chart --- */}
         <Text style={styles.sectionTitle}>Most Reported Species</Text>
-        <BarChart
-          data={{
-            labels: mostReportedSpecies.labels,
-            datasets: [{ data: mostReportedSpecies.data }]
-          }}
-          width={screenWidth - 50} // Use screen width minus padding
-          height={220}
-          chartConfig={{
-            backgroundGradientFrom: "#fff",
-            backgroundGradientTo: "#fff",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(25, 167, 206, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-          }}
-          style={{ borderRadius: 16 }}
-          fromZero
-        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 10 }}>
+          <BarChart
+            data={mostReportedSpecies}
+            width={mostReportedSpecies.labels.length * 80} // dynamic width
+            height={220}
+            chartConfig={chartConfig}
+            style={styles.chart}
+            fromZero
+            showValuesOnTopOfBars
+            withInnerLines={false}
+            flatColor={true}
+            showBarTops={true}
+          />
+        </ScrollView>
 
-        {/* Incident Trends */}
+        {/* --- Line Chart --- */}
         <Text style={styles.sectionTitle}>Incident Trends</Text>
-        <LineChart
-          data={{
-            labels: incidentTrends.labels,
-            datasets: [{ data: incidentTrends.data }]
-          }}
-          width={screenWidth - 50} // Consistent width
-          height={220}
-          chartConfig={{
-            backgroundGradientFrom: "#fff",
-            backgroundGradientTo: "#fff",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-          }}
-          style={{ borderRadius: 16 }}
-          fromZero
-        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 10 }}>
+          <LineChart
+            data={incidentTrends}
+            width={incidentTrends.labels.length * 70} // dynamic width
+            height={220}
+            chartConfig={chartConfig}
+            style={styles.chart}
+            fromZero
+            bezier
+            withDots={true}
+            withShadow={true}
+          />
+        </ScrollView>
 
-        {/* Species Overview */}
+        {/* --- Pie Chart --- */}
         <Text style={styles.sectionTitle}>Species Overview</Text>
-        <PieChart
-          data={speciesOverview}
-          width={screenWidth - 30}
-          height={220}
-          chartConfig={{
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          absolute
-        />
-        
+        <View style={styles.pieContainer}>
+          <PieChart
+            data={speciesOverview}
+            width={screenWidth - 40}
+            height={200}
+            chartConfig={chartConfig}
+            accessor="population"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute
+          />
+        </View>
       </ScrollView>
-      <Footer/>
+
+      <Footer />
     </Layout>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#F6F1F1",
+    paddingVertical: 10,
+  },
   statsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    paddingHorizontal: 5,
   },
   card: {
-    width: '48%',
+    width: "48%",
     borderRadius: 12,
-    padding: 15,
+    padding: 12,
+    borderWidth: 2,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
     marginBottom: 10,
   },
+  iconContainer: {
+    padding: 10,
+    borderRadius: 50,
+    marginBottom: 8,
+  },
   cardValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 22,
+    fontWeight: "bold",
   },
   cardTitle: {
-    fontSize: 14,
-    color: '#fff',
-    marginTop: 5,
+    fontSize: 12,
+    color: "#146C94",
+    textAlign: "center",
+    marginTop: 4,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#146C94',
-    marginVertical: 10,
+    fontWeight: "600",
+    color: "#146C94",
+    marginVertical: 12,
+    textAlign: "center",
+  },
+  chart: {
+    borderRadius: 16,
+    marginBottom: 20,
+  },
+  pieContainer: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    borderRadius: 16, alignSelf: "center", marginBottom: 20,
   },
 });
 
 export default Dashboard;
+
