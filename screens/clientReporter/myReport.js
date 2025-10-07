@@ -98,7 +98,7 @@ export default function MyReport() {
                     style: "destructive",
                     onPress: () => {
                         setReports(prev => prev.filter(report => report.id !== selectReport.id));
-                        Alert.alert('Success', "Report Deleted Successfully");
+                        Alert.alert('Success', "Report Deleted Successfully")
                     }
                 }
             ]
