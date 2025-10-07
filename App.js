@@ -19,6 +19,7 @@ import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 import AddSpeciesRequest from './screens/addSpeciesRequest';
 import ViewOneSpecies from './screens/viewOneSpecies';
 import ResearcherNotifications from './screens/researcherNotifications';
+import EditResearcherRequest from './screens/editResearcherRequest';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +52,13 @@ export default function App() {
             headerTitle: 'Notifications',
             headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
           }}
+        />
+        <Stack.Screen 
+          name="EditRequest" 
+          component={EditResearcherRequest} 
+          options={({ route }) => ({
+            title: route.params?.speciesId ? 'Edit Species Request' : 'Add Species Request'
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
