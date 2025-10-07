@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ReportCard({ report }) {
+export default function ReportCard({ report, onLongPress }) {
 
     const getReportStatusColor = (status) => {
         switch (status) {
@@ -38,9 +38,9 @@ export default function ReportCard({ report }) {
     return (
         <TouchableOpacity
             style={styles.ReportCard}
-        /*onLongPress={onLongPress}
-        delayLongPress={500}
-        activeOpacity={0.7}*/
+            onLongPress={onLongPress}
+            delayLongPress={500}
+            activeOpacity={0.7}
         >
 
             <View style={styles.reportHeader}>
