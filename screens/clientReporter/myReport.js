@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native'
 import ReportCard from '../../components/ui/ReportCard';
 import TabNavigation from '../../components/ui/TabNavigation';
+import ReportOptions from '../../components/ui/ReportOptions';
 
 export default function MyReport() {
 
@@ -68,6 +69,41 @@ export default function MyReport() {
         setReportPosition({ x: pageX, y: pageY });
         setShowOption(true);
     }
+
+    const handleUpdate = () => {
+        setShowOption(false);
+        Alert.alert(
+            "update Report",
+            `Update report #${selectReport.id}?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Update', onPress: () => {
+                        Alert.alert('Success', 'Report update initiated');
+                    }
+                },
+            ]
+        );
+    };
+
+    const handleDelete = () => {
+        setShowOption(false);
+        Alert.alert(
+            'Delete Report',
+            `Are you sure you want to delete report #${selectReport.id}?`,
+            [
+                { text: 'Cancel', style: "cancel" },
+                {
+                    text: 'Delete',
+                    style: "destructive",
+                    onPress: () => {
+                        setReports(prev => prev.filter(report => report.id !== selectReport.id));
+                        Alert.alert('Success', "Report Deleted Successfully");
+                    }
+                }
+            ]
+        )
+    }
     return (
         <View style={styles.mainContainer}>
             <TabNavigation
@@ -84,6 +120,14 @@ export default function MyReport() {
                     ))}
                 </View>
             </ScrollView>
+
+            <ReportOptions
+                visible={showOption}
+                onClose={() => setShowOption(false)}
+                position={reportPosition}
+                selectedReport={selectReport}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete} />
         </View>
 
     )
