@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Layout from '../components/layout/Layout';
 
-// We'll create these components next
 import StatsGrid from '../components/adminDashboard/StatsGrid';
-// import ChartsGrid from '../components/adminDashboard/ChartsGrid';
+import ChartsGrid from '../components/adminDashboard/ChartsGrid';
 import RecentReports from '../components/adminDashboard/RecentReports';
 import ActivityMapCard from '../components/adminDashboard/ActivityMapCard';
 
@@ -120,7 +119,7 @@ const AdminDashboard = () => {
         </View>
 
         {/* Charts Grid */}
-        {/* <ChartsGrid trendData={trendData} speciesData={speciesData} /> */}
+        <ChartsGrid trendData={trendData} speciesData={speciesData} />
       </ScrollView>
     </Layout>
   );
