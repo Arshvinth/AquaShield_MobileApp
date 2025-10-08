@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   halfColumn: {
     width: '50%',
     paddingHorizontal: 8,
+    minWidth: 300, // Ensure minimum width for larger screens
   },
 });
 
