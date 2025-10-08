@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout';
 import StatsGrid from '../components/adminDashboard/StatsGrid';
 // import ChartsGrid from '../components/adminDashboard/ChartsGrid';
 import RecentReports from '../components/adminDashboard/RecentReports';
-// import ActivityMapCard from '../components/adminDashboard/ActivityMapCard';
+import ActivityMapCard from '../components/adminDashboard/ActivityMapCard';
 
 // Mock API functions - replace with your actual API calls
 const getMonthlyStats = async () => {
@@ -115,7 +115,7 @@ const AdminDashboard = () => {
             <RecentReports reports={recentReports} />
           </View>
           <View style={styles.halfColumn}>
-            {/* <ActivityMapCard /> */}
+            <ActivityMapCard />
           </View>
         </View>
 
