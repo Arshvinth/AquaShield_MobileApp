@@ -5,7 +5,7 @@ import Layout from '../components/layout/Layout';
 // We'll create these components next
 import StatsGrid from '../components/adminDashboard/StatsGrid';
 // import ChartsGrid from '../components/adminDashboard/ChartsGrid';
-// import RecentReports from '../components/adminDashboard/RecentReports';
+import RecentReports from '../components/adminDashboard/RecentReports';
 // import ActivityMapCard from '../components/adminDashboard/ActivityMapCard';
 
 // Mock API functions - replace with your actual API calls
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
         {/* Recent Reports and Activity Map */}
         <View style={styles.row}>
           <View style={styles.halfColumn}>
-            {/* <RecentReports reports={recentReports} /> */}
+            <RecentReports reports={recentReports} />
           </View>
           <View style={styles.halfColumn}>
             {/* <ActivityMapCard /> */}
