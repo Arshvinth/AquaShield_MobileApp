@@ -20,6 +20,7 @@ import AddSpeciesRequest from './screens/addSpeciesRequest';
 import ViewOneSpecies from './screens/viewOneSpecies';
 import ResearcherNotifications from './screens/researcherNotifications';
 import EditResearcherRequest from './screens/editResearcherRequest';
+import viewOneSpecies from './screens/viewOneSpecies';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,13 @@ export default function App() {
           component={EditResearcherRequest} 
           options={({ route }) => ({
             title: route.params?.speciesId ? 'Edit Species Request' : 'Add Species Request'
+          })}
+        />
+        <Stack.Screen 
+          name="viewOneSpecies" 
+          component={viewOneSpecies} 
+          options={({ route }) => ({
+            title: route.params?.speciesId ? 'View Species' : 'Search Species'
           })}
         />
       </Stack.Navigator>
