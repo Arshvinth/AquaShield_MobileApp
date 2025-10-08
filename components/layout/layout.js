@@ -4,10 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from './header';
 import Footer from './footer';
 
-const Layout = ({ title, children }) => {
+const Layout = ({ title, children, showHeader = true, showFooter = true }) => {
   return (
-    <SafeAreaView style={styles.safeArea}  edges={[ 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
       <View style={styles.container}>
+        {/* Header */}
+        {/* {showHeader && <Header />} */}
+
         {/* Title below header */}
         {title && <Text style={styles.title}>{title}</Text>}
 
@@ -19,6 +22,9 @@ const Layout = ({ title, children }) => {
           {children}
         </ScrollView>
       </View>
+      
+      {/* Footer */}
+      {/* {showFooter && <Footer />} */}
     </SafeAreaView>
   );
 };
@@ -47,5 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
- 
 export default Layout;
