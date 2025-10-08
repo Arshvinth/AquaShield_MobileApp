@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
-import AddSpeciesRequest from './screens/addSpeciesRequest';
-import ViewOneSpecies from './screens/viewOneSpecies';
-import ResearcherNotifications from './screens/researcherNotifications';
-import EditResearcherRequest from './screens/editResearcherRequest';
+// import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
+// import AddSpeciesRequest from './screens/addSpeciesRequest';
+// import ViewOneSpecies from './screens/viewOneSpecies';
+// import ResearcherNotifications from './screens/researcherNotifications';
+// import EditResearcherRequest from './screens/editResearcherRequest';
 import AdminBottomTabs from './navigation/AdminBottomTabs';
 
 const Stack = createNativeStackNavigator();
