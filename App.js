@@ -21,6 +21,7 @@ import ViewOneSpecies from './screens/viewOneSpecies';
 import ResearcherNotifications from './screens/researcherNotifications';
 import EditResearcherRequest from './screens/editResearcherRequest';
 import viewOneSpecies from './screens/viewOneSpecies';
+import LandingPage from './screens/researcherLandingPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+         {/* Tabs as the main navigation */}
+        <Stack.Screen
+          name="LandingPage"
+          component={LandingPage}
+          options={{ headerShown: false }}
+        />
+
         {/* Tabs as the main navigation */}
         <Stack.Screen
           name="ResearcherTabs"
