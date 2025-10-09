@@ -21,9 +21,27 @@ const getMonthlyStats = async () => {
 const getRecentReports = async () => {
   // Mock data - replace with actual API call
   return [
-    { id: 1, species: 'Tuna', location: 'North Pacific', status: 'Pending' },
-    { id: 2, species: 'Salmon', location: 'Atlantic', status: 'Approved' },
-    { id: 3, species: 'Mackerel', location: 'Indian Ocean', status: 'Under Review' },
+    { 
+      id: 1, 
+      species: 'Tuna', 
+      location: 'North Pacific', 
+      status: 'Pending',
+      date: '2024-01-15'
+    },
+    { 
+      id: 2, 
+      species: 'Salmon', 
+      location: 'Atlantic', 
+      status: 'Approved',
+      date: '2024-01-14'
+    },
+    { 
+      id: 3, 
+      species: 'Mackerel', 
+      location: 'Indian Ocean', 
+      status: 'Under Review',
+      date: '2024-01-13'
+    },
   ];
 };
 
