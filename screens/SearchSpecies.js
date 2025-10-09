@@ -36,6 +36,7 @@ const SearchSpecies = ({ navigation }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isSearchOpen, setIsSearchOpen] = useState(true); // Collapsible search section
   const perPage = 5;
 
   const fetchSpecies = async (selectedQuery = query, pageNo = 1) => {
@@ -116,96 +117,113 @@ const SearchSpecies = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        {/* Collapsible Search Header */}
+        <TouchableOpacity
+          style={styles.collapseHeader}
+          onPress={() => setIsSearchOpen(!isSearchOpen)}
+        >
+          <Text style={styles.collapseTitle}>Search Options</Text>
+          {isSearchOpen ? (
+            <Ionicons name="chevron-up" size={20} color="#146C94" />
+          ) : (
+            <Ionicons name="chevron-down" size={20} color="#146C94" />
+          )}
+        </TouchableOpacity>
 
-        {/* Search By */}
-        <View style={styles.section}>
-          <Text style={styles.label}>Search By</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={searchBy}
-              onValueChange={(val) => {
-                setSearchBy(val);
-                setSuggestions([]);
-                setShowSuggestions(false);
-                setQuery('');
-                setSpeciesList([]);
-              }}
-              dropdownIconColor="#146C94"
-              style={styles.picker}
-            >
-              <Picker.Item label="Species Name" value="Species Name" />
-              <Picker.Item label="Protection Level" value="Protection Level" />
-            </Picker>
-          </View>
-        </View>
-
-        {/* Conditional Input */}
-        {searchBy === 'Species Name' && (
-          <>
-            <View style={styles.searchContainer}>
-              <MaterialIcons
-                name="search"
-                size={22}
-                color="#146C94"
-                style={{ marginRight: 6 }}
-              />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search by species name..."
-                placeholderTextColor="#8CA6B7"
-                value={query}
-                onChangeText={fetchSuggestions}
-              />
-              <TouchableOpacity>
-                <Entypo name="mic" size={20} color="#146C94" />
-              </TouchableOpacity>
+        {/* Collapsible Search Section */}
+        {isSearchOpen && (
+          <View style={styles.searchSection}>
+            {/* Search By */}
+            <View style={styles.section}>
+              <Text style={styles.label}>Search By</Text>
+              <View style={styles.pickerWrapper}>
+                <Picker
+                  selectedValue={searchBy}
+                  onValueChange={(val) => {
+                    setSearchBy(val);
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                    setQuery('');
+                    setSpeciesList([]);
+                  }}
+                  dropdownIconColor="#146C94"
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Species Name" value="Species Name" />
+                  <Picker.Item label="Protection Level" value="Protection Level" />
+                </Picker>
+              </View>
             </View>
 
-            {showSuggestions && suggestions.length > 0 && (
-              <View style={styles.suggestionsBox}>
-                {suggestions.map((item) => (
-                  <TouchableOpacity
-                    key={item._id}
-                    onPress={() =>
-                      handleSelectSuggestion(item.CommonName || item.ScientificName)
-                    }
-                    style={styles.suggestionRow}
-                  >
-                    <Text style={styles.suggestionText}>
-                      {item.CommonName} ({item.ScientificName})
-                    </Text>
+            {/* Conditional Input */}
+            {searchBy === 'Species Name' && (
+              <>
+                <View style={styles.searchContainer}>
+                  <MaterialIcons
+                    name="search"
+                    size={22}
+                    color="#146C94"
+                    style={{ marginRight: 6 }}
+                  />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search by species name..."
+                    placeholderTextColor="#8CA6B7"
+                    value={query}
+                    onChangeText={fetchSuggestions}
+                  />
+                  <TouchableOpacity>
+                    <Entypo name="mic" size={20} color="#146C94" />
                   </TouchableOpacity>
-                ))}
-              </View>
+                </View>
+
+                {showSuggestions && suggestions.length > 0 && (
+                  <View style={styles.suggestionsBox}>
+                    {suggestions.map((item) => (
+                      <TouchableOpacity
+                        key={item._id}
+                        onPress={() =>
+                          handleSelectSuggestion(item.CommonName || item.ScientificName)
+                        }
+                        style={styles.suggestionRow}
+                      >
+                        <Text style={styles.suggestionText}>
+                          {item.CommonName} ({item.ScientificName})
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+
+                <TouchableOpacity
+                  style={styles.searchButton}
+                  onPress={() => {
+                    setPage(1);
+                    fetchSpecies(query, 1);
+                  }}
+                >
+                  <Text style={styles.searchButtonText}>Search</Text>
+                </TouchableOpacity>
+              </>
             )}
 
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={() => {
-                setPage(1);
-                fetchSpecies(query, 1);
-              }}
-            >
-              <Text style={styles.searchButtonText}>Search</Text>
-            </TouchableOpacity>
-          </>
-        )}
-
-        {searchBy === 'Protection Level' && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Select Protection Level</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={protectionLevel}
-                onValueChange={(val) => setProtectionLevel(val)}
-                dropdownIconColor="#146C94"
-                style={styles.picker}
-              >
-                {protectionLevels.map((lvl, idx) => (
-                  <Picker.Item key={idx} label={lvl} value={lvl} />
-                ))}
-              </Picker>
-            </View>
+            {searchBy === 'Protection Level' && (
+              <View style={styles.section}>
+                <Text style={styles.label}>Select Protection Level</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={protectionLevel}
+                    onValueChange={(val) => setProtectionLevel(val)}
+                    dropdownIconColor="#146C94"
+                    style={styles.picker}
+                  >
+                    {protectionLevels.map((lvl, idx) => (
+                      <Picker.Item key={idx} label={lvl} value={lvl} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            )}
           </View>
         )}
 
@@ -299,24 +317,10 @@ const SearchSpecies = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 15,
-    paddingTop: 15,
-    backgroundColor: '#F6F9FC',
-  },
-  section: {
-    marginBottom: 10,
-  },
-  label: {
-    color: '#146C94',
-    fontWeight: '600',
-    marginBottom: 5,
-    fontSize: 14,
-  },
+  container: { flex: 1 },
+  content: { flex: 1, paddingHorizontal: 15, paddingTop: 15, backgroundColor: '#F6F9FC' },
+  section: { marginBottom: 10 },
+  label: { color: '#146C94', fontWeight: '600', marginBottom: 5, fontSize: 14 },
   pickerWrapper: {
     borderWidth: 1,
     borderColor: '#D0E3F0',
@@ -326,10 +330,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
   },
-  picker: {
-    height: 55,
-    color: '#146C94',
-  },
+  picker: { height: 55, color: '#146C94' },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -341,40 +342,29 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     height: 40,
   },
-  searchInput: {
-    flex: 1,
-    color: '#146C94',
-    fontSize: 16,
-  },
-  suggestionsBox: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
+  searchInput: { flex: 1, color: '#146C94', fontSize: 16 },
+  suggestionsBox: { backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#D0E3F0', marginBottom: 10 },
+  suggestionRow: { paddingVertical: 10, paddingHorizontal: 15, borderBottomWidth: 1, borderColor: '#E6E6E6' },
+  suggestionText: { color: '#146C94', fontWeight: '500' },
+  searchButton: { backgroundColor: '#19A7CE', borderRadius: 12, paddingVertical: 12, marginVertical: 10, alignItems: 'center' },
+  searchButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+
+  // Collapsible
+  collapseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: '#D0E3F0',
-    marginBottom: 10,
   },
-  suggestionRow: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: '#E6E6E6',
-  },
-  suggestionText: {
-    color: '#146C94',
-    fontWeight: '500',
-  },
-  searchButton: {
-    backgroundColor: '#19A7CE',
-    borderRadius: 12,
-    paddingVertical: 12,
-    marginVertical: 10,
-    alignItems: 'center',
-  },
-  searchButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  collapseTitle: { fontSize: 16, fontWeight: '600', color: '#146C94' },
+  searchSection: { marginBottom: 10 },
+
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
@@ -382,86 +372,29 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     elevation: 4,
     overflow: 'hidden',
   },
-  cardImage: {
-    width: '100%',
-    height: 200,
-  },
-  cardContent: {
-    padding: 15,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#146C94',
-  },
-  cardSubtitle: {
-    fontSize: 15,
-    color: '#19A7CE',
-    marginBottom: 10,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  detailValue: {
-    color: '#19A7CE',
-    fontSize: 14,
-  },
-  description: {
-    color: '#146C94',
-    marginTop: 10,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-  },
-  paginationText: {
-    color: '#146C94',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  pageButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    backgroundColor: '#19A7CE',
-    borderRadius: 8,
-  },
-  pageButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  viewButton: {
-    backgroundColor: '#19A7CE',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    elevation: 2, // subtle shadow
-  },
-
-  viewButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 13,
-  },
+  cardImage: { width: '100%', height: 200 },
+  cardContent: { padding: 15 },
+  cardTitle: { fontSize: 20, fontWeight: '700', color: '#146C94' },
+  cardSubtitle: { fontSize: 15, color: '#19A7CE', marginBottom: 10 },
   nameRow: {
-    flexDirection: 'row',         // align horizontally
-    alignItems: 'center',          // vertically center
-    justifyContent: 'space-between', // space out name and button
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
-
+  detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+  detailValue: { color: '#19A7CE', fontSize: 14 },
+  description: { color: '#146C94', marginTop: 10, fontSize: 14, lineHeight: 20 },
+  pagination: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15 },
+  paginationText: { color: '#146C94', fontWeight: '600', fontSize: 14 },
+  pageButton: { paddingHorizontal: 15, paddingVertical: 8, backgroundColor: '#19A7CE', borderRadius: 8 },
+  pageButtonText: { color: '#fff', fontWeight: '600' },
+  viewButton: { backgroundColor: '#19A7CE', paddingVertical: 6, paddingHorizontal: 14, borderRadius: 8, elevation: 2 },
+  viewButtonText: { color: '#fff', fontWeight: '600', fontSize: 13 },
 });
 
 export default SearchSpecies;
