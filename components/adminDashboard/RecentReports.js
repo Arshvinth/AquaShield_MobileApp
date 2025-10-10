@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import StatusBadge from '../adminReports/StatusBadge';
 
 const COLORS = {
@@ -19,6 +19,8 @@ const COLORS = {
   success: '#16A34A',
 };
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 export function RecentReports({ reports }) {
   return (
     <View style={styles.card}>
@@ -32,23 +34,32 @@ export function RecentReports({ reports }) {
       
       {/* Card Content */}
       <View style={styles.cardContent}>
-        {reports.length === 0 ? (
+        {(!reports || reports.length === 0) ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>No recent reports</Text>
           </View>
         ) : (
-          <View style={styles.reportsList}>
-            {reports.map((report) => (
-              <ReportItem key={report.id} report={report} />
+          <ScrollView
+            style={styles.reportsList}
+            contentContainerStyle={{ paddingBottom: 8 }}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+          >
+            {reports.map((report, idx) => (
+              <ReportItem
+                key={report.id}
+                report={report}
+                isLast={idx === reports.length - 1}
+              />
             ))}
-          </View>
+          </ScrollView>
         )}
       </View>
     </View>
   );
 }
 
-function ReportItem({ report }) {
+function ReportItem({ report, isLast }) {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -59,7 +70,7 @@ function ReportItem({ report }) {
   };
 
   return (
-    <View style={styles.reportItem}>
+    <View style={[styles.reportItem, !isLast && { marginBottom: 10 }]}>
       <View style={styles.reportContent}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportId}>#{report.id}</Text>
@@ -84,19 +95,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: 16,
-    width: 380, // Full width
-    minHeight: 300, // Minimum height
-    maxHeight: 400, // Maximum height to prevent overflow
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   cardHeader: {
     marginBottom: 16,
@@ -112,13 +120,15 @@ const styles = StyleSheet.create({
     color: COLORS.mutedForeground,
   },
   cardContent: {
-    flex: 1, // Take available space
+    flex: 1,
+    minHeight: 120,
+    maxHeight: screenHeight * 0.4, // 40% of screen height for scrollable area
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 200,
+    minHeight: 120,
   },
   emptyText: {
     fontSize: 14,
@@ -126,8 +136,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   reportsList: {
-    gap: 12,
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 1,
   },
   reportItem: {
     flexDirection: 'row',

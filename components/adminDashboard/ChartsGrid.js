@@ -20,6 +20,9 @@ const COLORS = {
 };
 
 const { width: screenWidth } = Dimensions.get('window');
+const CHART_HORIZONTAL_MARGIN = 32; // total horizontal margin (16 left + 16 right)
+const CHART_MIN_WIDTH = 250;
+const CHART_PADDING = 50;
 
 const ChartsGrid = ({ trendData, speciesData }) => {
   return (
@@ -31,18 +34,18 @@ const ChartsGrid = ({ trendData, speciesData }) => {
 };
 
 function IncidentTrendsChart({ data }) {
-  const chartWidth = screenWidth - 80; // Account for padding
+  const chartWidth = Math.max(screenWidth - CHART_HORIZONTAL_MARGIN, CHART_MIN_WIDTH);
   const chartHeight = 200;
-  const padding = 40;
+  const padding = CHART_PADDING;
   const graphWidth = chartWidth - padding * 2;
   const graphHeight = chartHeight - padding * 2;
 
-  // Calculate scales
-  const maxValue = Math.max(...data.map(d => d.incidents));
-  const xScale = graphWidth / (data.length - 1);
-  const yScale = graphHeight / maxValue;
+  if (!data || data.length === 0) return null;
 
-  // Generate points for the line
+  const maxValue = Math.max(...data.map(d => d.incidents || 0), 1); // avoid 0
+  const xScale = data.length > 1 ? graphWidth / (data.length - 1) : 0;
+  const yScale = maxValue > 0 ? graphHeight / maxValue : 0;
+
   const points = data.map((item, index) => ({
     x: padding + index * xScale,
     y: padding + graphHeight - (item.incidents * yScale)
@@ -158,17 +161,18 @@ function IncidentTrendsChart({ data }) {
 }
 
 function TopSpeciesChart({ data }) {
-  const chartWidth = screenWidth - 80;
+  const chartWidth = Math.max(screenWidth - CHART_HORIZONTAL_MARGIN, CHART_MIN_WIDTH);
   const chartHeight = 200;
-  const padding = 40;
+  const padding = CHART_PADDING;
   const graphWidth = chartWidth - padding * 2;
   const graphHeight = chartHeight - padding * 2;
 
-  // Calculate scales
-  const maxValue = Math.max(...data.map(d => d.reports || d.count));
-  const barWidth = (graphWidth / data.length) * 0.6;
-  const xScale = graphWidth / data.length;
-  const yScale = graphHeight / maxValue;
+  if (!data || data.length === 0) return null;
+
+  const maxValue = Math.max(...data.map(d => d.reports || d.count || 0), 1); // avoid 0
+  const barWidth = data.length > 0 ? (graphWidth / data.length) * 0.6 : 0;
+  const xScale = data.length > 0 ? graphWidth / data.length : 0;
+  const yScale = maxValue > 0 ? graphHeight / maxValue : 0;
 
   return (
     <View style={styles.card}>
@@ -281,20 +285,17 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -8,
     gap: 16,
   },
   card: {
     flex: 1,
-    minWidth: screenWidth > 768 ? '48%' : '100%',
+    minWidth: CHART_MIN_WIDTH,
+    maxWidth: screenWidth - CHART_HORIZONTAL_MARGIN,
     backgroundColor: COLORS.card,
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,

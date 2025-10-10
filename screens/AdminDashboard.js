@@ -1,72 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Layout from '../components/layout/Layout';
-
 import StatsGrid from '../components/adminDashboard/StatsGrid';
 import ChartsGrid from '../components/adminDashboard/ChartsGrid';
 import RecentReports from '../components/adminDashboard/RecentReports';
 import ActivityMapCard from '../components/adminDashboard/ActivityMapCard';
+import { 
+  getMonthlyStats,
+  getRecentReports, 
+  getSpeciesData, 
+  getTrendData 
+} from '../api/reportApi';
 
 // Mock API functions - replace with your actual API calls
-const getMonthlyStats = async () => {
-  // Mock data - replace with actual API call
-  return {
-    totalReports: 2847,
-    pending: 23,
-    approved: 156,
-    successRate: 92.6,
-  };
-};
+// const getMonthlyStats = async () => {
+//   // Mock data - replace with actual API call
+//   return {
+//     totalReports: 2847,
+//     pending: 23,
+//     approved: 156,
+//     successRate: 92.6,
+//   };
+// };
 
-const getRecentReports = async () => {
-  // Mock data - replace with actual API call
-  return [
-    { 
-      id: 1, 
-      species: 'Tuna', 
-      location: 'North Pacific', 
-      status: 'Pending',
-      date: '2024-01-15'
-    },
-    { 
-      id: 2, 
-      species: 'Salmon', 
-      location: 'Atlantic', 
-      status: 'Approved',
-      date: '2024-01-14'
-    },
-    { 
-      id: 3, 
-      species: 'Mackerel', 
-      location: 'Indian Ocean', 
-      status: 'Under Review',
-      date: '2024-01-13'
-    },
-  ];
-};
+// const getRecentReports = async () => {
+//   // Mock data - replace with actual API call
+//   return [
+//     { 
+//       id: 1, 
+//       species: 'Tuna', 
+//       location: 'North Pacific', 
+//       status: 'Pending',
+//       date: '2024-01-15'
+//     },
+//     { 
+//       id: 2, 
+//       species: 'Salmon', 
+//       location: 'Atlantic', 
+//       status: 'Approved',
+//       date: '2024-01-14'
+//     },
+//     { 
+//       id: 3, 
+//       species: 'Mackerel', 
+//       location: 'Indian Ocean', 
+//       status: 'Under Review',
+//       date: '2024-01-13'
+//     },
+//   ];
+// };
 
-const getTrendData = async () => {
-  // Mock data - replace with actual API call
-  return [
-    { month: 'Jan', incidents: 45 },
-    { month: 'Feb', incidents: 52 },
-    { month: 'Mar', incidents: 38 },
-    { month: 'Apr', incidents: 67 },
-    { month: 'May', incidents: 58 },
-    { month: 'Jun', incidents: 72 },
-  ];
-};
+// const getTrendData = async () => {
+//   // Mock data - replace with actual API call
+//   return [
+//     { month: 'Jan', incidents: 45 },
+//     { month: 'Feb', incidents: 52 },
+//     { month: 'Mar', incidents: 38 },
+//     { month: 'Apr', incidents: 67 },
+//     { month: 'May', incidents: 58 },
+//     { month: 'Jun', incidents: 72 },
+//   ];
+// };
 
-const getSpeciesData = async () => {
-  // Mock data - replace with actual API call
-  return [
-    { species: 'Tuna', reports: 24 },
-    { species: 'Salmon', reports: 16 },
-    { species: 'Cod', reports: 12 },
-    { species: 'Mackerel', reports: 6 },
-    { species: 'Sardines', reports: 3 },
-  ];
-};
+// const getSpeciesData = async () => {
+//   // Mock data - replace with actual API call
+//   return [
+//     { species: 'Tuna', reports: 24 },
+//     { species: 'Salmon', reports: 16 },
+//     { species: 'Cod', reports: 12 },
+//     { species: 'Mackerel', reports: 6 },
+//     { species: 'Sardines', reports: 3 },
+//   ];
+// };
 
 const AdminDashboard = () => {
   const [recentReports, setRecentReports] = useState([]);
@@ -81,28 +86,30 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const loadDashboardData = async () => {
       try {
         setLoading(true);
-        const [recentData, trendData, speciesData, statsData] = await Promise.all([
+
+        const [recentData, trend, species, stats] = await Promise.all([
           getRecentReports(),
           getTrendData(),
           getSpeciesData(),
-          getMonthlyStats()
+          getMonthlyStats(),
         ]);
-        
+
         setRecentReports(recentData);
-        setTrendData(trendData);
-        setSpeciesData(speciesData);
-        setStats(statsData);
+        setTrendData(trend);
+        setSpeciesData(species);
+        setStats(stats);
+
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error loading dashboard data:", error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
+    loadDashboardData();
   }, []);
 
   if (loading) {
@@ -118,14 +125,14 @@ const AdminDashboard = () => {
 
   return (
     <Layout title="ADMIN DASHBOARD">
-      <ScrollView 
+      <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Stats Grid */}
         <StatsGrid stats={stats} />
-        
+
         {/* Recent Reports and Activity Map */}
         <View style={styles.row}>
           <View style={styles.halfColumn}>
@@ -168,7 +175,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   halfColumn: {
-    width: '50%',
+    width: '100%',
     paddingHorizontal: 8,
     minWidth: 300, // Ensure minimum width for larger screens
   },

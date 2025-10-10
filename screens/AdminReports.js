@@ -4,6 +4,7 @@ import Layout from '../components/layout/Layout';
 import ReportFilters from '../components/adminReports/ReportFilters';
 import ReportsTable from '../components/adminReports/ReportsTable';
 import ReportDetailsDialog from '../components/adminReports/ReportDetailsDialog';
+import { getAllReports } from '../api/reportApi';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -23,65 +24,65 @@ const COLORS = {
 };
 
 // Mock API function - replace with your actual API
-const getAllReports = async () => {
-  return [
-    {
-      _id: '1',
-      species: 'Bluefin Tuna',
-      location: 'North Pacific Ocean',
-      status: 'PENDING',
-      date: '2024-01-15',
-      time: '14:30',
-      description: 'Illegal fishing activity detected near international waters',
-      evidencePhotos: ['photo1.jpg'],
-      coordinates: [35.0, -150.0]
-    },
-    {
-      _id: '2',
-      species: 'Atlantic Salmon',
-      location: 'Atlantic Coast',
-      status: 'APPROVED',
-      date: '2024-01-14',
-      time: '10:15',
-      description: 'Unauthorized fishing vessel spotted',
-      evidencePhotos: ['photo2.jpg', 'photo3.jpg'],
-      coordinates: [25.0, -70.0]
-    },
-    {
-      _id: '3',
-      species: 'Mackerel',
-      location: 'Indian Ocean',
-      status: 'REJECTED',
-      date: '2024-01-13',
-      time: '16:45',
-      description: 'False alarm - legal fishing activity',
-      evidencePhotos: [],
-      coordinates: [-20.0, 70.0]
-    },
-    {
-      _id: '4',
-      species: 'Cod',
-      location: 'Mediterranean Sea',
-      status: 'PENDING',
-      date: '2024-01-12',
-      time: '09:20',
-      description: 'Suspicious fishing vessel without proper identification',
-      evidencePhotos: ['photo4.jpg'],
-      coordinates: [35.0, 18.0]
-    },
-    {
-      _id: '5',
-      species: 'Sardines',
-      location: 'South China Sea',
-      status: 'APPROVED',
-      date: '2024-01-11',
-      time: '13:45',
-      description: 'Confirmed illegal fishing operation',
-      evidencePhotos: ['photo5.jpg', 'photo6.jpg'],
-      coordinates: [12.0, 113.0]
-    }
-  ];
-};
+// const getAllReports = async () => {
+//   return [
+//     {
+//       _id: '1',
+//       species: 'Bluefin Tuna',
+//       location: 'North Pacific Ocean',
+//       status: 'PENDING',
+//       date: '2024-01-15',
+//       time: '14:30',
+//       description: 'Illegal fishing activity detected near international waters',
+//       evidencePhotos: ['photo1.jpg'],
+//       coordinates: [35.0, -150.0]
+//     },
+//     {
+//       _id: '2',
+//       species: 'Atlantic Salmon',
+//       location: 'Atlantic Coast',
+//       status: 'APPROVED',
+//       date: '2024-01-14',
+//       time: '10:15',
+//       description: 'Unauthorized fishing vessel spotted',
+//       evidencePhotos: ['photo2.jpg', 'photo3.jpg'],
+//       coordinates: [25.0, -70.0]
+//     },
+//     {
+//       _id: '3',
+//       species: 'Mackerel',
+//       location: 'Indian Ocean',
+//       status: 'REJECTED',
+//       date: '2024-01-13',
+//       time: '16:45',
+//       description: 'False alarm - legal fishing activity',
+//       evidencePhotos: [],
+//       coordinates: [-20.0, 70.0]
+//     },
+//     {
+//       _id: '4',
+//       species: 'Cod',
+//       location: 'Mediterranean Sea',
+//       status: 'PENDING',
+//       date: '2024-01-12',
+//       time: '09:20',
+//       description: 'Suspicious fishing vessel without proper identification',
+//       evidencePhotos: ['photo4.jpg'],
+//       coordinates: [35.0, 18.0]
+//     },
+//     {
+//       _id: '5',
+//       species: 'Sardines',
+//       location: 'South China Sea',
+//       status: 'APPROVED',
+//       date: '2024-01-11',
+//       time: '13:45',
+//       description: 'Confirmed illegal fishing operation',
+//       evidencePhotos: ['photo5.jpg', 'photo6.jpg'],
+//       coordinates: [12.0, 113.0]
+//     }
+//   ];
+// };
 
 export function AdminReports() {
   const [reports, setReports] = useState([]);
@@ -93,6 +94,7 @@ export function AdminReports() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
+        setLoading(true);
         const data = await getAllReports();
         setReports(data);
       } catch (err) {
