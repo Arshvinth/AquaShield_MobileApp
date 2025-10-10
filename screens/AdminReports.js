@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Layout from '../components/layout/Layout';
 import ReportFilters from '../components/adminReports/ReportFilters';
-// import ReportsTable from '../components/adminReports/ReportsTable';
+import ReportsTable from '../components/adminReports/ReportsTable';
 // import ReportDetailsDialog from '../components/adminReports/ReportDetailsDialog';
 
 const COLORS = {
@@ -139,10 +139,10 @@ export function AdminReports() {
           onStatusFilterChange={setStatusFilter}
         />
         
-        {/* <ReportsTable 
+        <ReportsTable 
           reports={filteredReports}
           onViewReport={setSelectedReport}
-        /> */}
+        />
         
         {/* <ReportDetailsDialog 
           report={selectedReport}
