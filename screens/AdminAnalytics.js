@@ -25,22 +25,24 @@ const COLORS = {
 // Mock API functions - replace with your actual API calls
 const getFrequencyData = async () => {
   return [
-    { month: 'Jan', reports: 45 },
-    { month: 'Feb', reports: 52 },
-    { month: 'Mar', reports: 38 },
-    { month: 'Apr', reports: 67 },
-    { month: 'May', reports: 58 },
-    { month: 'Jun', reports: 72 },
+    { month: 'Jan', incidents: 45, prevented: 38 },
+    { month: 'Feb', incidents: 52, prevented: 45 },
+    { month: 'Mar', incidents: 38, prevented: 32 },
+    { month: 'Apr', incidents: 67, prevented: 58 },
+    { month: 'May', incidents: 58, prevented: 50 },
+    { month: 'Jun', incidents: 72, prevented: 65 },
   ];
 };
 
 const getSpeciesStats = async () => {
   return [
-    { species: 'Tuna', count: 24 },
-    { species: 'Salmon', count: 16 },
-    { species: 'Cod', count: 12 },
-    { species: 'Mackerel', count: 6 },
-    { species: 'Sardines', count: 3 },
+    { species: 'Bluefin Tuna', count: 24 },
+    { species: 'Atlantic Salmon', count: 18 },
+    { species: 'Atlantic Cod', count: 15 },
+    { species: 'Mackerel', count: 12 },
+    { species: 'Sardines', count: 9 },
+    { species: 'Swordfish', count: 7 },
+    { species: 'Yellowfin Tuna', count: 6 },
   ];
 };
 
