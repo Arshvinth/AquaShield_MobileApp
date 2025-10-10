@@ -81,6 +81,10 @@ import ResearcherNotifications from './screens/researcherNotifications';
 import EditResearcherRequest from './screens/editResearcherRequest';
 import viewOneSpecies from './screens/viewOneSpecies';
 import LandingPage from './screens/researcherLandingPage';
+import LaunchPage from './screens/LaunchScreen';
+import onBoarding1 from './screens/onBoarding1';
+import onBoarding2 from './screens/onBoarding2';
+import onBoarding3 from './screens/onBoarding3';
 
 
 const Stack = createNativeStackNavigator();
@@ -112,6 +116,26 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen
+          name="LaunchPage"
+          component={LaunchPage}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="onBoarding1"
+          component={onBoarding1}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="onBoarding2"
+          component={onBoarding2}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="onBoarding3"
+          component={onBoarding3}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="LandingPage"
           component={LandingPage}
