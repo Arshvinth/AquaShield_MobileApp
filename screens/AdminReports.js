@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import Layout from '../components/layout/Layout';
 import ReportFilters from '../components/adminReports/ReportFilters';
 import ReportsTable from '../components/adminReports/ReportsTable';
-// import ReportDetailsDialog from '../components/adminReports/ReportDetailsDialog';
+import ReportDetailsDialog from '../components/adminReports/ReportDetailsDialog';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -144,10 +144,10 @@ export function AdminReports() {
           onViewReport={setSelectedReport}
         />
         
-        {/* <ReportDetailsDialog 
+        <ReportDetailsDialog 
           report={selectedReport}
           onClose={() => setSelectedReport(null)}
-        /> */}
+        />
       </ScrollView>
     </Layout>
   );
