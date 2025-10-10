@@ -1,12 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker';
-import { View, Image, Text, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert, Switch, Platform, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
+import { View, Image, Text, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert, Switch, Platform, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import MapView, { Marker } from "react-native-maps";
 import * as DocumentPicker from 'expo-document-picker';
+import NetInfo from "@react-native-community/netinfo";
+import { createNewReport, getIncidentType } from '../../src/services/reportService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveReportOffline } from '../../src/services/offlineService';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function ClientReportIncident() {
+
+    const navigation = useNavigation();
 
     const [formData, setFormData] = useState({
         locationInfo: {
@@ -28,13 +36,16 @@ export default function ClientReportIncident() {
             name: "",
             mobile: "",
             email: "",
-            annonimity: false,
+            anonymity: false,
         },
     });
+    const [incidentType, setIncidentType] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const speciesImg = require("../../assets/shark.jpeg");
 
-    const incidentTypes = [
+    {/*const incidentTypes = [
         { id: 1, name: "Fishing without license", requiresSpecies: false },
         { id: 2, name: "Fishing in restricted area", requiresSpecies: false },
         { id: 3, name: "Using explosives", requiresSpecies: false },
@@ -45,7 +56,9 @@ export default function ClientReportIncident() {
         { id: 8, name: "Targeting endangered species", requiresSpecies: true },
         { id: 9, name: "Illegal fish trade", requiresSpecies: true },
         { id: 10, name: "Foreign vessel intrusion", requiresSpecies: true }
-    ];
+    ];*/}
+
+
 
     const speciesTypes = [
         "Tuna",
@@ -54,6 +67,28 @@ export default function ClientReportIncident() {
         "Sea Cucumber",
         "Ornamental Fish"
     ];
+
+    useEffect(() => {
+        fetchIncidentTypes();
+
+    }, []);
+
+    const fetchIncidentTypes = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            console.log('Fetching incident types...');
+            const types = await getIncidentType();
+            console.log('Received incident types:', types);
+            setIncidentType(types);
+
+        } catch (err) {
+            console.log('Failed to fetch incident types', err);
+            setError('Failed to Load incident types');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const updateForm = (section, field, value) => {
         setFormData((prev) => ({
@@ -149,14 +184,59 @@ export default function ClientReportIncident() {
         }));
     };
 
-    const selectedIncidentType = incidentTypes.find(
-        (type) => type.name === formData.incidentInfo.incidentType
-    );
+    const selectedIncidentType = incidentType?.find(
+        (type) => type === formData.incidentInfo.incidentType
+    ) || null;
+
+    const requiresSpecies = (incidentType) => {
+        const speciesRRequiredTypes = [
+            "Catching undersized fish",
+            "Exceeding quota",
+            "Targeting endangered species",
+            "Illegal fish trade",
+            "Foreign vessel intrusion"
+        ];
+        return speciesRRequiredTypes.includes(incidentType);
+    }
 
 
     const toggleAnnonymity = () => {
-        updateForm("personalInfo", "annonimity", !formData.personalInfo.annonimity);
+        const newAnonymityState = !formData.personalInfo.anonymity;
+        updateForm("personalInfo", "anonymity", newAnonymityState);
+
+        if (newAnonymityState) {
+            Alert.alert('Anonymous Reporting', 'Your report will be submitted anonymously');
+        }
+
     };
+
+    const handleSubmit = async () => {
+        console.log("Submit button clicked");
+        const state = await NetInfo.fetch();
+
+        if (state.isConnected) {
+            try {
+                await createNewReport(formData);
+                Alert.alert("Success", "Report Submitted Successfully!", [
+                    {
+                        text: "OK",
+                        onPress: () => navigation.navigate('My Report')
+                    }
+                ]);
+            } catch (error) {
+                Alert.alert("Error", "Failed to submit Report.")
+            }
+        } else {
+            await saveReportOffline(formData);
+            Alert.alert("Saved Offline", "You 're Offline.Report saedd locally and will upload when connected", [
+                {
+                    text: "OK",
+                    onPress: () => navigation.navigate('My Report')
+                }
+            ]);
+
+        }
+    }
     return (
 
         <KeyboardAvoidingView
@@ -181,55 +261,67 @@ export default function ClientReportIncident() {
                         </View>
                         <View style={styles.sectionContainer}>
                             <Text style={styles.label}>Incident Type</Text>
-                            <Picker
-                                selectedValue={formData.incidentInfo.incidentType}
-                                onValueChange={(value) => {
-                                    updateForm("incidentInfo", "incidentType", value);
-                                    updateForm("incidentInfo", "species", "");
-                                }}
-                                style={{ color: "#19A7CE", fontSize: 16 }}  >
-                                <Picker.Item label="-- Select Incident --" value="" style={{ color: "#146C94", fontSize: 14 }} />
-                                {incidentTypes.map((type) => (
-                                    <Picker.Item key={type.id} label={type.name} value={type.name} />
-                                ))}
-                            </Picker>
 
-                            {formData.incidentInfo.incidentType &&
-                                incidentTypes.find((t) => t.name === formData.incidentInfo.incidentType)?.requiresSpecies && (
-                                    <>
-                                        <Text style={styles.label}>Species</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsHorizontalScrollIndicator={false}
-                                            style={styles.speciesScroll}>
-                                            <View style={styles.speciesContainer}>
-                                                {speciesTypes.map((species, index) => (
-                                                    <TouchableOpacity
-                                                        key={index}
-                                                        style={[
-                                                            styles.speciesCard,
-                                                            formData.incidentInfo.species === species && styles.selectSpeciesCard
-                                                        ]}
-                                                        onPress={() => handleSpecieSelect(species)}
-                                                    >
-                                                        <Image
-                                                            source={speciesImg}
-                                                            style={styles.spImg}
-                                                        />
-                                                        <Text style={[
-                                                            styles.speciesText,
-                                                            formData.incidentInfo.species === species && styles.selectedSpeciesText
-                                                        ]}>
-                                                            {species}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </ScrollView>
+                            {loading ? (
+                                <View style={styles.loadingContainer}>
+                                    <ActivityIndicator size="small" color="#146C94" />
+                                    <Text style={styles.loadingText}>Loading Incident Types...</Text>
+                                </View>
+                            ) : error ? (
+                                <View style={styles.errorContainer}>
+                                    <Text style={styles.errorText}>{error}</Text>
+                                </View>
+                            ) : (
+                                <Picker
+                                    selectedValue={formData.incidentInfo.incidentType}
+                                    onValueChange={(value) => {
+                                        updateForm("incidentInfo", "incidentType", value);
+                                        updateForm("incidentInfo", "species", "");
+                                    }}
+                                    style={{ color: "#19A7CE", fontSize: 16 }}  >
+                                    <Picker.Item label="-- Select Incident --" value="" style={{ color: "#146C94", fontSize: 14 }} />
+                                    {Array.isArray(incidentType) && incidentType.map((type, index) => (
+                                        <Picker.Item key={index} label={type} value={type} />
+                                    ))}
+                                </Picker>
+                            )}
 
-                                    </>
 
-                                )}
+                            {formData.incidentInfo.incidentType && requiresSpecies(formData.incidentInfo.incidentType) && (
+                                <>
+                                    <Text style={styles.label}>Species</Text>
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        style={styles.speciesScroll}>
+                                        <View style={styles.speciesContainer}>
+                                            {speciesTypes.map((species, index) => (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    style={[
+                                                        styles.speciesCard,
+                                                        formData.incidentInfo.species === species && styles.selectSpeciesCard
+                                                    ]}
+                                                    onPress={() => handleSpecieSelect(species)}
+                                                >
+                                                    <Image
+                                                        source={speciesImg}
+                                                        style={styles.spImg}
+                                                    />
+                                                    <Text style={[
+                                                        styles.speciesText,
+                                                        formData.incidentInfo.species === species && styles.selectedSpeciesText
+                                                    ]}>
+                                                        {species}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </ScrollView>
+
+                                </>
+
+                            )}
 
                             <Text style={styles.label}>Description</Text>
                             <TextInput
@@ -336,8 +428,8 @@ export default function ClientReportIncident() {
                         <TextInput
                             style={styles.input}
                             multiline
-                            value={formData.incidentInfo.description}
-                            onChangeText={(text) => updateForm("incidentInfo", "description", text)} />
+                            value={formData.locationInfo.description}
+                            onChangeText={(text) => updateForm("locationInfo", "description", text)} />
 
 
 
@@ -369,17 +461,17 @@ export default function ClientReportIncident() {
                                     </View>
                                 </View>
                                 <Switch
-                                    value={formData.personalInfo.annonimity}
+                                    value={formData.personalInfo.anonymity}
                                     onValueChange={toggleAnnonymity}
                                     trackColor={{ false: '#787070ff', true: '#146C94' }}
-                                    thumbColor={formData.personalInfo.annonimity ? '#FFFFFF' : '#F5F5F5'}
+                                    thumbColor={formData.personalInfo.anonymity ? '#FFFFFF' : '#F5F5F5'}
                                     ios_backgroundColor='#E3F2FD' />
-                                {formData.personalInfo.annonimity && (
+                                {formData.personalInfo.anonymity && (
                                     Alert.alert('Your Report Submitted Annonymously')
                                 )}
                             </View>
                         </View>
-                        {!formData.personalInfo.annonimity && (
+                        {!formData.personalInfo.anonymity && (
                             <View style={styles.personalDetails}>
                                 <Text style={styles.label}>Full Name</Text>
                                 <TextInput
@@ -423,9 +515,9 @@ export default function ClientReportIncident() {
 
                     </View>
 
-                    <TouchableOpacity style={styles.submitButton}>
+                    <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                         <Text style={styles.submitButtonText}>Submit Report</Text>
-                        <Ionicons name="send" size={20} color="#FFFFFF" />
+                        <Ionicons name="send" size={20} color="#146C94" />
                     </TouchableOpacity>
 
                 </ScrollView>
