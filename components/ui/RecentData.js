@@ -1,62 +1,114 @@
-import React from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, ScrollView } from 'react-native';
+import { getAllReports } from '../../src/services/reportService';
 
-const reports = [
-    { id: "R-8", date: "2025-09-01", location: "Kollupitiya", status: "Pending" },
-    { id: "R-5", date: "2025-08-31", location: "Kollupitiya", status: "Pending" },
-    { id: "R-4", date: "2025-08-31", location: "Kollupitiya", status: "Verified" },
-    { id: "R-3", date: "2025-08-31", location: "Kollupitiya", status: "Reject" },
-];
 export default function RecentData() {
 
+    const [reports, setReports] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchReports = async () => {
+        try {
+            setLoading(true);
+            const data = await getAllReports();
+
+            const sortedReports = data.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+
+            const recentReports = sortedReports.slice(0, 8);
+
+            setReports(recentReports);
+        } catch (err) {
+            console.error("Error Fetching reports", err);
+            setError("Failed to load reports");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchReports();
+    }, []);
+
     const renderRaw = ({ item, index }) => (
-        <View key={item.id} style={styles.row}>
-            <Text style={styles.cell}>{item.id}</Text>
-            <Text style={styles.cell}>{item.date}</Text>
-            <Text style={styles.cell}>{item.location}</Text>
+        <View key={item._id} style={styles.row}>
+            <Text style={[styles.cell, styles.idCell]}>{item._id}</Text>
+            <Text style={[styles.cell, styles.dateCell]}>{new Date(item.date).toISOString().split('T')[0]}</Text>
+            <Text style={[styles.cell, styles.locationCell]}>{item.location.description || 'N/A'}</Text>
             <View style={[styles.statusCell, getStatusStyle(item.status)]}>
                 <Text style={styles.statusText}>{item.status}</Text>
             </View>
         </View>
-    )
-    return (
-        <View style={styles.container}>
-            <View style={[styles.row, styles.headerRow]}>
-                <Text style={[styles.cell, styles.header]}>ID</Text>
-                <Text style={[styles.cell, styles.header]}>Date</Text>
-                <Text style={[styles.cell, styles.header]}>Location</Text>
-                <Text style={[styles.cell, styles.header]}>Status</Text>
+    );
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.headerTitle}>Recent Reports</Text>
+                <ActivityIndicator size="large" color="#19A7CE" style={{ margin: 15 }} />
             </View>
+        );
+    }
 
-            {reports.map((item, index) => renderRaw({ item, index }))}
+    if (error) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.headerTitle}>Recent Reports</Text>
+                <Text style={styles.errorText}>{error}</Text>
+            </View>
+        );
+    }
 
-            {reports.length === 0 && (
-                <View style={styles.emptyState}>
-                    <Text style={styles.emptyText}>No recent reports</Text>
+
+    return (
+
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+            <View style={styles.container}>
+                <View style={[styles.row, styles.headerRow]}>
+                    <Text style={[styles.cell, styles.header, styles.idCell]}>ID</Text>
+                    <Text style={[styles.cell, styles.header, styles.dateCell]}>Date</Text>
+                    <Text style={[styles.cell, styles.header, styles.locationCell]}>Location</Text>
+                    <Text style={[styles.cell, styles.header]}>Status</Text>
                 </View>
-            )}
 
-        </View>
+                {reports.map((item, index) => renderRaw({ item, index }))}
+
+                {reports.length === 0 && (
+                    <View style={styles.emptyState}>
+                        <Text style={styles.emptyText}>No recent reports</Text>
+                    </View>
+                )}
+
+            </View>
+        </ScrollView>
+
     );
 }
 
 const getStatusStyle = (status) => {
     switch (status) {
-        case "Pending":
+        case "PENDING":
             return {
-                backgroundColor: "#C2C504"
+                backgroundColor: "#C2C504",
+                padding: 12
             };
-        case "Verified":
+        case "VERIFIED":
             return {
-                backgroundColor: "#19A7CE"
+                backgroundColor: "#19A7CE",
+                padding: 12
             };
-        case "Reject":
+        case "REJECT":
             return {
-                backgroundColor: "#19CE40"
+                backgroundColor: "#19CE40",
+                padding: 12
             };
         default:
             return {
-                backgroundColor: "#ccc"
+                backgroundColor: "#ccc",
+                padding: 12
             }
 
     }
@@ -86,8 +138,10 @@ const styles = StyleSheet.create({
     cell: {
         flex: 1,
         textAlign: "center",
-        fontSize: 14,
+        fontSize: 12,
         color: "#146C94",
+        height: 50,
+
     },
     header: {
         fontWeight: "bold",
@@ -104,4 +158,7 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
     },
+    idCell: { minWidth: 120 },
+    dateCell: { minWidth: 100 },
+    locationCell: { minWidth: 150 },
 })
