@@ -1,7 +1,7 @@
-// components/statistics/HotspotsList.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { getHotspots } from '../../api/reportApi';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -18,17 +18,6 @@ const COLORS = {
   destructiveForeground: '#FFFFFF',
   border: '#D6DBDF',
   success: '#16A34A',
-};
-
-// Mock API function - replace with your actual API
-const getHotspots = async () => {
-  return [
-    { region: 'North Pacific Ocean', lat: 35.0, lng: -150.0, incidents: 247 },
-    { region: 'Atlantic Coast', lat: 25.0, lng: -70.0, incidents: 189 },
-    { region: 'Indian Ocean', lat: -20.0, lng: 70.0, incidents: 156 },
-    { region: 'Mediterranean Sea', lat: 35.0, lng: 18.0, incidents: 134 },
-    { region: 'South China Sea', lat: 12.0, lng: 113.0, incidents: 112 },
-  ];
 };
 
 export function HotspotsList() {
@@ -51,14 +40,6 @@ export function HotspotsList() {
             <HotspotItem key={index} hotspot={hotspot} index={index} />
           ))}
         </View>
-        
-        {/* Optional: Add interactive heatmap button later */}
-        {/* <View style={styles.buttonContainer}>
-          <Button variant="outline" className="w-full">
-            <MapPin className="w-4 h-4 mr-2" />
-            View Interactive Heatmap
-          </Button>
-        </View> */}
       </View>
     </View>
   );
