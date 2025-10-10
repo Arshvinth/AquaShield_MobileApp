@@ -48,10 +48,10 @@ const getSpeciesStats = async () => {
 
 const getStatusData = async () => {
   return [
-    { status: 'Approved', count: 156, percentage: 65 },
-    { status: 'Pending', count: 23, percentage: 10 },
-    { status: 'Rejected', count: 45, percentage: 19 },
-    { status: 'Under Review', count: 16, percentage: 6 },
+    { name: 'Approved', value: 156 },
+    { name: 'Pending', value: 23 },
+    { name: 'Rejected', value: 45 },
+    { name: 'Under Review', value: 16 },
   ];
 };
 
