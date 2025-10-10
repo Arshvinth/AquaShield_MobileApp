@@ -24,7 +24,7 @@ const { width: screenWidth } = Dimensions.get('window');
 export function FrequencyChart({ data }) {
   const chartWidth = Math.max(screenWidth - 32, 250); // Account for card padding and margins
   const chartHeight = 300;
-  const padding = 24;
+  const padding = 50;
   const graphWidth = chartWidth - padding * 2;
   const graphHeight = chartHeight - padding * 2;
 
