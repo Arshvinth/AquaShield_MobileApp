@@ -3,13 +3,17 @@ import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import RecentData from '../../components/ui/RecentData';
 import ReportChart from '../../components/ui/ReportChart';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ClientHomeScreen() {
+
+    const navigation = useNavigation();
+
     return (
         <ScrollView style={styles.container}>
 
             <View style={styles.row}>
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Report')}>
                     <Ionicons
                         name="flag"
                         size={25}
