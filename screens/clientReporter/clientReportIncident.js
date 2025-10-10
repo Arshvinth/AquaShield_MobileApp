@@ -16,7 +16,7 @@ export default function ClientReportIncident() {
 
     const navigation = useNavigation();
 
-    const [formData, setFormData] = useState({
+    const initialFormData = {
         locationInfo: {
             type: "Point",
             coordinates: [],
@@ -38,7 +38,9 @@ export default function ClientReportIncident() {
             email: "",
             anonymity: false,
         },
-    });
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
     const [incidentType, setIncidentType] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -72,6 +74,10 @@ export default function ClientReportIncident() {
         fetchIncidentTypes();
 
     }, []);
+
+    const resetForm = () => {
+        setFormData(initialFormData);
+    }
 
     const fetchIncidentTypes = async () => {
         try {
@@ -223,11 +229,13 @@ export default function ClientReportIncident() {
                         onPress: () => navigation.navigate('My Report')
                     }
                 ]);
+                resetForm();
             } catch (error) {
                 Alert.alert("Error", "Failed to submit Report.")
             }
         } else {
             await saveReportOffline(formData);
+            resetForm();
             Alert.alert("Saved Offline", "You 're Offline.Report saedd locally and will upload when connected", [
                 {
                     text: "OK",
@@ -775,6 +783,27 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 14,
         fontWeight: "700"
+    },
+    loadingContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 10,
+        justifyContent: "center"
+    },
+    loadingText: {
+        marginLeft: 10,
+        color: '#146C94',
+        fontSize: 14,
+    },
+    errorContainer: {
+        padding: 10,
+        alignItems: "center",
+    },
+    errorText: {
+        color: '#FF6B6B',
+        fontSize: 14,
+        textAlign: "center",
+        marginBottom: 10
     }
 
 

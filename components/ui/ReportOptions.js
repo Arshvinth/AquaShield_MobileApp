@@ -20,7 +20,7 @@ export default function ReportOptions({ visible, onClose, position, selectedRepo
                             left: position.x - 120,
                         }
                         ]}>
-                        {selectedReport?.status === 'Pending' && (
+                        {selectedReport?.status === 'PENDING' && (
                             <TouchableOpacity
                                 style={styles.optionButton}
                                 onPress={onUpdate}>

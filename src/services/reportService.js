@@ -44,3 +44,22 @@ export const getIncidentType = async () => {
         throw error;
     }
 }
+
+export const getAllReports = async () => {
+    try {
+        const response = await apiClient("/api/report/getReports");
+        return response.data || response;
+    } catch (error) {
+        console.log("Error fetching incident Types:", error);
+        throw error;
+    }
+}
+
+export const deleteReport = async (reportId) => {
+    try {
+        const response = await apiClient(`/api/report/deleteReport/${reportId}`, { method: 'DELETE' });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to delete report');
+    }
+}

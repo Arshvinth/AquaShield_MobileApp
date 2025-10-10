@@ -2,19 +2,19 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ReportCard({ report, onLongPress }) {
+export default function ReportCard({ report, onPress, onLongPress }) {
 
     const getReportStatusColor = (status) => {
         switch (status) {
-            case 'Pending':
+            case 'PENDING':
                 return {
                     backgroundColor: '#C2C504'
                 }
-            case 'Verified':
+            case 'VERIFIED':
                 return {
                     backgroundColor: '#146C94'
                 }
-            case 'Reject':
+            case 'REJECT':
                 return {
                     backgroundColor: '#FF0000'
                 }
@@ -28,9 +28,9 @@ export default function ReportCard({ report, onLongPress }) {
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'Pending': return 'time-outline';
-            case 'Verified': return 'checkmark-circle-outline';
-            case 'Reject': return 'close-circle-outline';
+            case 'PENDING': return 'time-outline';
+            case 'VERIFIED': return 'checkmark-circle-outline';
+            case 'REJECT': return 'close-circle-outline';
             default: return 'help-circle-outline';
         }
     };
@@ -39,20 +39,32 @@ export default function ReportCard({ report, onLongPress }) {
         <TouchableOpacity
             style={styles.ReportCard}
             onLongPress={onLongPress}
+            onPress={onPress}
             delayLongPress={500}
             activeOpacity={0.7}
         >
 
             <View style={styles.reportHeader}>
                 <View style={styles.sampleEvidence}>
-                    <Image source={report.uri} style={styles.evidenceImage} />
+                    {report.evidencePhotos && report.evidencePhotos.length > 0 ? (
+                        <Image
+                            source={{ uri: report.evidencePhotos[0].url }}
+                            style={styles.evidenceImage}
+                        />
+                    ) : (
+                        <Image
+                            source={require('../../assets/reportimg.jpg')}
+                            style={styles.evidenceImage}
+                        />
+                    )}
+
                 </View>
                 <View style={styles.locationContainer}>
                     <Text style={styles.label}>
                         Location
                     </Text>
                     <Text style={styles.retriveDta}>
-                        {report.location}
+                        {report.location?.description}
                     </Text>
                     <View style={styles.dateSection}>
                         <Ionicons
@@ -60,7 +72,7 @@ export default function ReportCard({ report, onLongPress }) {
                             size={16}
                             color={"#146C94"} />
                         <Text style={styles.retriveDta}>
-                            {report.date}
+                            {new Date(report.date).toLocaleDateString()}
                         </Text>
                     </View>
                 </View>
@@ -77,7 +89,7 @@ export default function ReportCard({ report, onLongPress }) {
                     </View>
                     <View style={styles.typeSection}>
                         <Text style={styles.labelType}>
-                            {report.type}
+                            {report.incidentType}
                         </Text>
                     </View>
                 </View>
@@ -143,7 +155,7 @@ const styles = StyleSheet.create({
     statusContainer: {
         flexDirection: "row",
         gap: 4,
-        maxWidth: 85,
+        maxWidth: 95,
         borderRadius: 10,
         padding: 5
 
