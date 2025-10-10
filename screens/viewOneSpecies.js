@@ -88,7 +88,7 @@ const ViewOneSpecies = ({ route }) => {
         await axios.post(`${API_BASE_URL}/api/favorites`, { speciesId, userId: "dummyUserId" });
         setFavorite(true);
 
-        // ✅ Show toast or alert
+        // Show toast or alert
         if (Platform.OS === "android") {
           ToastAndroid.show("Added to Favorites ❤️", ToastAndroid.SHORT);
         } else {
@@ -99,7 +99,7 @@ const ViewOneSpecies = ({ route }) => {
         await axios.delete(`${API_BASE_URL}/api/favorites`, { data: { speciesId, userId: "dummyUserId" } });
         setFavorite(false);
 
-        // ✅ Show toast or alert
+        // Show toast or alert
         if (Platform.OS === "android") {
           ToastAndroid.show("Removed from Favorites 💔", ToastAndroid.SHORT);
         } else {
