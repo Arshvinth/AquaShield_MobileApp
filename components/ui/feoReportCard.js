@@ -41,8 +41,8 @@ export default function FeoReportCard({ report, onPress, onStatusUpdate }) {
             const result = await updateStatus(reportid, newStatus);
 
             const notificationStatus = {
-                title: "Submitted Report Status",
-                message: "Your report Status : Peniding"
+                title: "Approve/Reject Report Status",
+                message: `Your report Status :${newStatus}`
             };
             console.log('Sending notification:', notificationStatus);
             await createNotification(notificationStatus);
