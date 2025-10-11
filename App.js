@@ -2,8 +2,15 @@ import * as React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 import * as Font from 'expo-font';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+
+import LandingPage from './screens/researcherLandingPage';
+import LaunchPage from './screens/LaunchScreen';
+import onBoarding1 from './screens/onBoarding1';
+import onBoarding2 from './screens/onBoarding2';
+import onBoarding3 from './screens/onBoarding3';
 
 import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 import AddSpeciesRequest from './screens/addSpeciesRequest';
@@ -11,15 +18,12 @@ import ViewOneSpecies from './screens/viewOneSpecies';
 import ResearcherNotifications from './screens/researcherNotifications';
 import EditResearcherRequest from './screens/editResearcherRequest';
 import viewOneSpecies from './screens/viewOneSpecies';
-import LandingPage from './screens/researcherLandingPage';
-import LaunchPage from './screens/LaunchScreen';
-import onBoarding1 from './screens/onBoarding1';
-import onBoarding2 from './screens/onBoarding2';
-import onBoarding3 from './screens/onBoarding3';
 
 import ClientBottom from './navigation/ClientReporterBottomTab';
 import useNetworkStatus from './src/hooks/useNetworkStatus';
 import FeoBottom from './navigation/FEOBottomNavigation';
+
+import AdminBottomTabs from './navigation/AdminBottomTabs';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +54,17 @@ export default function App() {
 
   // Your original navigation structure remains untouched
   return (
+    <>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {/* Admin Bottom Tabs as the main navigation */}
+          <Stack.Screen
+            name="AdminTabs"
+            component={AdminBottomTabs}
+            options={{ headerShown: false }}
+          />
+
+          {/* Tabs as the main navigation
     <NavigationContainer>
       <ClientBottom />
       <Stack.Navigator>
@@ -82,6 +97,9 @@ export default function App() {
           name="ResearcherTabs"
           component={ResearcherBottomTabsBottomTabs}
           options={{ headerShown: false }}
+        /> */}
+          {/* Extra screen for new species request */}
+          {/* <Stack.Screen 
         />
         <Stack.Screen
           name="AddSpeciesRequest"
@@ -117,8 +135,10 @@ export default function App() {
           options={({ route }) => ({
             title: route.params?.speciesId ? 'View Species' : 'Search Species',
           })}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+        /> */}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Toast />
+    </>
   );
 }
