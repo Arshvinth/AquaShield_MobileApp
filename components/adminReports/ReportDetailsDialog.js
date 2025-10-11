@@ -1,5 +1,15 @@
-import React from 'react';
-import { View, Text, Modal, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  ActivityIndicator
+} from 'react-native';
+import { updateReportStatus } from '../../api/reportApi';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -18,7 +28,9 @@ const COLORS = {
   success: '#16A34A',
 };
 
-const ReportDetailsDialog = ({ report, onClose }) => {
+const ReportDetailsDialog = ({ report, onClose, onStatusChange }) => {
+  const [loading, setLoading] = useState(false);
+
   if (!report) return null;
 
   const getStatusColor = (status) => {
@@ -47,6 +59,25 @@ const ReportDetailsDialog = ({ report, onClose }) => {
     });
   };
 
+  // Handle status update
+  const handleStatusUpdate = async (newStatus) => {
+    try {
+      setLoading(true);
+      await updateReportStatus(report._id, newStatus);
+      Alert.alert('Success', `Report marked as ${getStatusText(newStatus)}`);
+
+      // Convert to lowercase when passing to parent
+      onStatusChange?.(report._id, newStatus.toLowerCase());
+
+      setTimeout(onClose, 500); // Wait for alert to show
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update report status.');
+      console.error('Status update error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -68,22 +99,22 @@ const ReportDetailsDialog = ({ report, onClose }) => {
           <ScrollView style={styles.modalBody}>
             <View style={styles.detailSection}>
               <Text style={styles.sectionTitle}>Basic Information</Text>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Report ID:</Text>
                 <Text style={styles.detailValue}>{report._id}</Text>
               </View>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Species:</Text>
                 <Text style={styles.detailValue}>{report.species}</Text>
               </View>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Location:</Text>
                 <Text style={styles.detailValue}>{report.location}</Text>
               </View>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Coordinates:</Text>
                 <Text style={styles.detailValue}>
@@ -94,17 +125,17 @@ const ReportDetailsDialog = ({ report, onClose }) => {
 
             <View style={styles.detailSection}>
               <Text style={styles.sectionTitle}>Timeline</Text>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Date:</Text>
                 <Text style={styles.detailValue}>{formatDate(report.date)}</Text>
               </View>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Time:</Text>
                 <Text style={styles.detailValue}>{report.time}</Text>
               </View>
-              
+
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Status:</Text>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(report.status) + '20' }]}>
@@ -128,10 +159,45 @@ const ReportDetailsDialog = ({ report, onClose }) => {
             </View>
           </ScrollView>
 
+          {/* Action Buttons - Only show for PENDING reports */}
+          {report.status?.toLowerCase() === 'pending' && (
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: COLORS.destructive }]}
+                disabled={loading}
+                onPress={() => handleStatusUpdate('REJECTED')}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.actionButtonText}>Reject</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: COLORS.success }]}
+                disabled={loading}
+                onPress={() => handleStatusUpdate('CONFIRMED')}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.actionButtonText}>Approve</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Footer */}
           <View style={styles.modalFooter}>
-            <TouchableOpacity style={styles.closeModalButton} onPress={onClose}>
-              <Text style={styles.closeModalButtonText}>Close</Text>
+            <TouchableOpacity
+              style={styles.closeModalButton}
+              onPress={onClose}
+              disabled={loading}
+            >
+              <Text style={styles.closeModalButtonText}>
+                {loading ? 'Processing...' : 'Close'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -153,7 +219,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: '90%',
     maxWidth: 500,
-    maxHeight: '80%',
+    maxHeight: '85%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -251,6 +317,26 @@ const styles = StyleSheet.create({
     color: COLORS.primaryForeground,
     fontSize: 16,
     fontWeight: '500',
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
