@@ -3,12 +3,12 @@ import { API_BASE_URL } from "../../config"
 export const apiClient = async (endpoint, options = {}) => {
 
     const url = `${API_BASE_URL}${endpoint}`;
-    const headers = options.headers || {};
+    const headers = { ...options.headers };
 
-    if (!(options.body instanceof FormData)) {
+    // ONLY set Content-Type if it's NOT FormData AND not already set
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
         headers["Content-Type"] = "application/json";
     }
-
     try {
         const response = await fetch(url, {
             ...options,

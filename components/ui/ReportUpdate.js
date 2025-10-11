@@ -57,33 +57,33 @@ export default function ReportUpdateForm({ report, onBack }) {
     useEffect(() => {
         console.log('Received report data:', report);
         if (report) {
+            // Transform backend data to match frontend structure
             setFormData({
                 locationInfo: {
-                    type: report.locationInfo?.type || "Point",
-                    coordinates: report.locationInfo?.coordinates || [],
-                    lat: report.locationInfo?.lat?.toString() || "",
-                    lng: report.locationInfo?.lng?.toString() || "",
-                    description: report.locationInfo?.description || "",
+                    type: report.location?.type || "Point",
+                    coordinates: report.location?.coordinates || [],
+                    lat: report.location?.coordinates?.[1]?.toString() || "", // latitude is at index 1
+                    lng: report.location?.coordinates?.[0]?.toString() || "", // longitude is at index 0
+                    description: report.location?.description || "",
                 },
                 incidentInfo: {
-                    incidentDate: report.incidentInfo?.incidentDate || "",
-                    incidentTime: report.incidentInfo?.incidentTime || "",
-                    incidentType: report.incidentInfo?.incidentType || "",
-                    species: report.incidentInfo?.species || "",
-                    description: report.incidentInfo?.description || "",
+                    incidentDate: report.date || "",
+                    incidentTime: report.time || "",
+                    incidentType: report.incidentType || "",
+                    species: report.species || "",
+                    description: report.description || "",
                 },
-                evidences: report.evidences || [],
+                evidences: report.evidencePhotos?.map(photo => photo.url) || [],
                 personalInfo: {
-                    name: report.personalInfo?.name || "",
-                    mobile: report.personalInfo?.mobile || "",
-                    email: report.personalInfo?.email || "",
-                    anonymity: report.personalInfo?.anonymity || false,
+                    name: "", // These might not be stored in the report
+                    mobile: "",
+                    email: "",
+                    anonymity: report.isAnonymous || false,
                 },
             });
         }
 
         fetchIncidentTypes();
-
     }, [report]);
 
     const fetchIncidentTypes = async () => {
@@ -227,10 +227,30 @@ export default function ReportUpdateForm({ report, onBack }) {
 
     const handleSubmit = async () => {
         try {
+            console.log("🔍 SUBMITTING FORM DATA:");
+            console.log("Full formData:", JSON.stringify(formData, null, 2));
+            console.log("📍 locationInfo:", formData.locationInfo);
+            console.log("📝 incidentInfo:", formData.incidentInfo);
+            console.log("👤 personalInfo:", formData.personalInfo);
+            console.log("📎 evidences count:", formData.evidences.length);
+
+            // Validate required data
+            if (!formData.locationInfo) {
+                Alert.alert("Error", "Location information is required");
+                return;
+            }
+            if (!formData.incidentInfo || !formData.incidentInfo.incidentType) {
+                Alert.alert("Error", "Incident type is required");
+                return;
+            }
+
             await updateReport(formData, report._id);
-            onBack(); // go back to list
+
+            Alert.alert("SuccessFully Updated", report._id);
+            onBack();
         } catch (error) {
-            Alert.alert("Error", "Something went wrong. Please try again.");
+            console.error("Submit error:", error);
+            Alert.alert("Error", "Failed to update report: " + error.message);
         }
     };
 

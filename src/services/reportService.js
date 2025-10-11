@@ -101,9 +101,9 @@ export const updateReport = async (reportData, reportId) => {
 
     const formData = new FormData();
 
-    formData.append('locationInfo', JSON.stringify(reportData.locationInfo));
-    formData.append('incidentInfo', JSON.stringify(reportData.incidentInfo));
-    formData.append('personalInfo', JSON.stringify(reportData.personalInfo));
+    formData.append('locationInfo', JSON.stringify(reportData.locationInfo || {}));
+    formData.append('incidentInfo', JSON.stringify(reportData.incidentInfo || {}));
+    formData.append('personalInfo', JSON.stringify(reportData.personalInfo || {}));
 
     if (reportData.evidences && reportData.evidences.length > 0) {
         reportData.evidences.forEach((uri, index) => {
@@ -127,6 +127,7 @@ export const updateReport = async (reportData, reportId) => {
 
     return await apiClient(`/api/report/updateReport/${reportId}`, {
         method: "PUT",
-        body: formData
+        body: formData,
+        headers: { "Content-Type": "multipart/form-data" }
     });
 };
