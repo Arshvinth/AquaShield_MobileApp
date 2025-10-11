@@ -17,6 +17,9 @@ import onBoarding1 from './screens/onBoarding1';
 import onBoarding2 from './screens/onBoarding2';
 import onBoarding3 from './screens/onBoarding3';
 
+import ClientBottom from './navigation/ClientReporterBottomTab';
+import useNetworkStatus from './src/hooks/useNetworkStatus';
+import FeoBottom from './navigation/FEOBottomNavigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,10 +45,13 @@ export default function App() {
       </View>
     );
   }
+  
+  useNetworkStatus();
 
   // Your original navigation structure remains untouched
   return (
     <NavigationContainer>
+      <ClientBottom />
       <Stack.Navigator>
         <Stack.Screen
           name="LaunchPage"
@@ -116,4 +122,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-

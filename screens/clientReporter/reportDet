@@ -1,0 +1,9 @@
+import React from 'react'
+
+export default function reportDet() {
+    return (
+        <View style={{ flex: 1, justifyContent: "Center", alignItems: "center" }}>
+            <Text>Client Home Screen</Text>
+        </View>
+    )
+}
