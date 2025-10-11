@@ -92,3 +92,41 @@ export const deleteReport = async (reportId) => {
         throw new Error(error.response?.data?.message || 'Failed to delete report');
     }
 }
+
+
+
+
+
+export const updateReport = async (reportData, reportId) => {
+
+    const formData = new FormData();
+
+    formData.append('locationInfo', JSON.stringify(reportData.locationInfo));
+    formData.append('incidentInfo', JSON.stringify(reportData.incidentInfo));
+    formData.append('personalInfo', JSON.stringify(reportData.personalInfo));
+
+    if (reportData.evidences && reportData.evidences.length > 0) {
+        reportData.evidences.forEach((uri, index) => {
+            const file = {
+                uri: uri,
+                type: 'image/jpeg',
+                name: `evidence_${index}.jpg`
+            };
+            formData.append('evidence', file);
+        })
+    }
+
+
+    console.log("Sending FormData with:", {
+        location: reportData.locationInfo,
+        incident: reportData.incidentInfo,
+        personal: reportData.personalInfo,
+        evidenceCount: reportData.evidences?.length || 0
+    });
+
+
+    return await apiClient(`/api/report/updateReport/${reportId}`, {
+        method: "PUT",
+        body: formData
+    });
+};

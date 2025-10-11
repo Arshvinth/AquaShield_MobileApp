@@ -12,8 +12,8 @@ export default function App() {
   return (
     <NavigationContainer>
       {/*<ResearcherBottomTabsBottomTabs />*/}
-      {/*<ClientBottom />*/}
-      <FeoBottom />
+      <ClientBottom />
+      {/*<FeoBottom />*/}
     </NavigationContainer>
   );
 }

@@ -6,6 +6,7 @@ import ReportOptions from '../../components/ui/ReportOptions';
 import { deleteReport, getAllReports } from '../../src/services/reportService';
 import ReportDetails from '../../components/ui/ReportDetails';
 import { createNotification } from '../../src/services/notificationService';
+import ReportUpdateForm from '../../components/ui/ReportUpdate';
 
 export default function MyReport() {
 
@@ -13,6 +14,7 @@ export default function MyReport() {
     const [selectReport, setSelectReport] = useState(null);
     const [reportPosition, setReportPosition] = useState({ x: 0, y: 0 });
     const [showOption, setShowOption] = useState(false);
+    const [showUpdateForm, setUpdateForm] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showReportDetails, setShowReportDetails] = useState(null);
@@ -59,18 +61,11 @@ export default function MyReport() {
 
     const handleUpdate = () => {
         setShowOption(false);
-        Alert.alert(
-            "update Report",
-            `Update report #${selectReport.id}?`,
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Update', onPress: () => {
-                        Alert.alert('Success', 'Report update initiated');
-                    }
-                },
-            ]
-        );
+        setUpdateForm(true);
+
+
+
+
     };
 
     const fetchMyReport = async () => {
@@ -150,7 +145,11 @@ export default function MyReport() {
     return (
         <View style={styles.mainContainer}>
 
-            {showReportDetails ? (
+            {showUpdateForm ? (
+                <ReportUpdateForm
+                    report={selectReport}
+                    onBack={() => setUpdateForm(false)} />
+            ) : showReportDetails ? (
                 <ReportDetails
                     report={showReportDetails}
                     onBack={() => setShowReportDetails(null)}
