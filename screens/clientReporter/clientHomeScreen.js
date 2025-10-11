@@ -1,13 +1,37 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import RecentData from '../../components/ui/RecentData';
 import ReportChart from '../../components/ui/ReportChart';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { createNotification } from '../../src/services/notificationService';
 
 export default function ClientHomeScreen() {
 
     const navigation = useNavigation();
+
+    useEffect(() => {
+
+        let isMounted = true;
+        const sendNotification = async () => {
+            try {
+                const notificationData = {
+                    title: "Accessing Client Reporter Home Section",
+                    message: "You have successfully accessed the Home screen",
+                };
+
+                console.log("Sending notification:", notificationData);
+                await createNotification(notificationData);
+            } catch (error) {
+                console.error("Failed to send notification:", error);
+            }
+        };
+
+        sendNotification();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     return (
         <ScrollView style={styles.container}>

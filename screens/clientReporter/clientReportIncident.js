@@ -10,6 +10,7 @@ import { createNewReport, getIncidentType } from '../../src/services/reportServi
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveReportOffline } from '../../src/services/offlineService';
 import { useNavigation } from '@react-navigation/native';
+import { createNotification } from '../../src/services/notificationService';
 
 
 export default function ClientReportIncident() {
@@ -223,12 +224,27 @@ export default function ClientReportIncident() {
         if (state.isConnected) {
             try {
                 await createNewReport(formData);
+
+                const notificationData = {
+                    title: "Report Submitted Successfully",
+                    message: `Your report "${formData.incidentInfo.incidentType}" has been submitted and is under review.`
+                };
+                console.log('Sending notification:', notificationData);
+                await createNotification(notificationData);
+
+                const notificationStatus = {
+                    title: "Submitted Report Status",
+                    message: "Your report Status : Peniding"
+                };
+                console.log('Sending notification:', notificationStatus);
+                await createNotification(notificationStatus);
                 Alert.alert("Success", "Report Submitted Successfully!", [
                     {
                         text: "OK",
                         onPress: () => navigation.navigate('My Report')
                     }
                 ]);
+
                 resetForm();
             } catch (error) {
                 Alert.alert("Error", "Failed to submit Report.")

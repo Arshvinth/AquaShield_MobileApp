@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, Modal, FlatList, Dimensions, Alert, Linking } from 'react-native'
+import { createNotification } from '../../src/services/notificationService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -89,6 +90,24 @@ export default function ReportDetails({ report, onBack }) {
             Alert.alert("Error", "Unable to open Google Maps");
         });
     };
+
+    useEffect(async () => {
+        const sendNotification = async () => {
+            try {
+                const notificationData = {
+                    title: "Accessing Report Details Section",
+                    message: "You have successfully accessed report details",
+                };
+
+                console.log("Sending notification:", notificationData);
+                await createNotification(notificationData);
+            } catch (error) {
+                console.error("Failed to send notification:", error);
+            }
+        };
+
+        sendNotification();
+    }, []);
 
 
     const renderEvidenceItem = ({ item, index }) => (

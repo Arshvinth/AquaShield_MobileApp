@@ -5,6 +5,7 @@ import TabNavigation from '../../components/ui/TabNavigation';
 import ReportOptions from '../../components/ui/ReportOptions';
 import { deleteReport, getAllReports } from '../../src/services/reportService';
 import ReportDetails from '../../components/ui/ReportDetails';
+import { createNotification } from '../../src/services/notificationService';
 
 export default function MyReport() {
 
@@ -28,7 +29,25 @@ export default function MyReport() {
     }
 
     useEffect(() => {
+
+        const sendNotification = async () => {
+            try {
+                const notificationData = {
+                    title: "Accessing Client Reporter Report Section",
+                    message: "You have successfully accessed to the Report Section",
+                };
+
+                console.log("Sending notification:", notificationData);
+                await createNotification(notificationData);
+            } catch (error) {
+                console.error("Failed to send notification:", error);
+            }
+        };
+
+        sendNotification();
         fetchMyReport();
+
+
     }, []);
 
     const handleLongPress = (report, event) => {
@@ -99,6 +118,14 @@ export default function MyReport() {
                             setLoading(true);
                             await deleteReport(selectReport._id);
                             Alert.alert('Success', "Report Deleted Successfully");
+
+                            const notificationData = {
+                                title: "Report Deleted Successfully",
+                                message: `You Delete "${selectReport._id}" report successfully.`
+                            };
+                            console.log('Sending notification:', notificationData);
+                            await createNotification(notificationData);
+
                             fetchMyReport();
                         } catch (err) {
                             console.log('Delete error:', err);
