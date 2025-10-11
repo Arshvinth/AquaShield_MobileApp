@@ -32,7 +32,7 @@ const OnboardingScreen3 = ({ navigation }) => {
       {/* Top Image */}
       <View style={styles.imageWrapper}>
         <Image
-          source={require("../assets/AppImages/onboard3Top.png")}
+          source={require("../assets/AppImages/TopOnboard3.png")}
           style={styles.image}
           resizeMode="cover"
         />

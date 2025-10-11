@@ -26,7 +26,7 @@ const OnboardingScreen2 = ({ navigation }) => {
       {/* Fullscreen Image at Top */}
       <View style={styles.imageWrapper}>
         <Image
-          source={require("../assets/AppImages/onboard2Top.png")}
+          source={require("../assets/AppImages/TopOnboard2.png")}
           style={styles.image}
           resizeMode="cover"
         />
