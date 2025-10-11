@@ -21,16 +21,6 @@ const COLORS = {
   success: '#16A34A',
 };
 
-// Mock API function - replace with your actual API
-// const getKeyMetrics = async () => {
-//   return {
-//     totalIncidents: "2,847",
-//     prevented: "2,634",
-//     preventionRate: 92.6,
-//     activeHotspots: 23,
-//   };
-// };
-
 export function KeyMetrics() {
   const [metrics, setMetrics] = useState([]);
 
@@ -49,8 +39,8 @@ export function KeyMetrics() {
           title: "Prevented",
           value: data.prevented,
           description: `${data.preventionRate}% prevention rate`,
-          icon: "fish",
-          iconType: "material",
+          icon: "fish-outline",
+          iconType: "ionicons",
           color: "success",
         },
         {
