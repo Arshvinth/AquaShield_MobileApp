@@ -21,9 +21,9 @@ const COLORS = {
 const ReportFilters = ({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange }) => {
   const statusOptions = [
     { value: 'all', label: 'All Status' },
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'APPROVED', label: 'Approved' },
-    { value: 'REJECTED', label: 'Rejected' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'confirmed', label: 'Confirmed' },
+    { value: 'rejected', label: 'Rejected' },
   ];
 
   return (
