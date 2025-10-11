@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { updateReportStatus } from '../../api/reportApi';
 
 const COLORS = {
@@ -64,14 +65,26 @@ const ReportDetailsDialog = ({ report, onClose, onStatusChange }) => {
     try {
       setLoading(true);
       await updateReportStatus(report._id, newStatus);
-      Alert.alert('Success', `Report marked as ${getStatusText(newStatus)}`);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Report Updated',
+        text2: `Report marked as ${getStatusText(newStatus)}`,
+        position: 'top',
+        visibilityTime: 2500,
+      });
 
       // Convert to lowercase when passing to parent
       onStatusChange?.(report._id, newStatus.toLowerCase());
 
-      setTimeout(onClose, 500); // Wait for alert to show
+      setTimeout(onClose, 500); // close modal after toast
     } catch (error) {
-      Alert.alert('Error', 'Failed to update report status.');
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: 'Could not update report status. Try again.',
+        position: 'top',
+      });
       console.error('Status update error:', error);
     } finally {
       setLoading(false);

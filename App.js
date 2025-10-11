@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 // import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 // import AddSpeciesRequest from './screens/addSpeciesRequest';
 // import ViewOneSpecies from './screens/viewOneSpecies';
@@ -12,23 +13,24 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {/* Admin Bottom Tabs as the main navigation */}
-        <Stack.Screen
-          name="AdminTabs"
-          component={AdminBottomTabs}
-          options={{ headerShown: false }}
-        />
-        
-        {/* Tabs as the main navigation
+    <>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {/* Admin Bottom Tabs as the main navigation */}
+          <Stack.Screen
+            name="AdminTabs"
+            component={AdminBottomTabs}
+            options={{ headerShown: false }}
+          />
+
+          {/* Tabs as the main navigation
         <Stack.Screen
           name="ResearcherTabs"
           component={ResearcherBottomTabsBottomTabs}
           options={{ headerShown: false }}
         /> */}
-        {/* Extra screen for new species request */}
-        {/* <Stack.Screen 
+          {/* Extra screen for new species request */}
+          {/* <Stack.Screen 
           name="AddSpeciesRequest"
           component={AddSpeciesRequest}
           options={{ title: 'Add Species Request' }}
@@ -54,7 +56,9 @@ export default function App() {
             title: route.params?.speciesId ? 'Edit Species Request' : 'Add Species Request'
           })}
         /> */}
-      </Stack.Navigator>
-    </NavigationContainer>
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Toast />
+    </>
   );
 }
