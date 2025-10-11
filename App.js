@@ -1,17 +1,58 @@
 import * as React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-// import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
-// import AddSpeciesRequest from './screens/addSpeciesRequest';
-// import ViewOneSpecies from './screens/viewOneSpecies';
-// import ResearcherNotifications from './screens/researcherNotifications';
-// import EditResearcherRequest from './screens/editResearcherRequest';
+import * as Font from 'expo-font';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+
+import LandingPage from './screens/researcherLandingPage';
+import LaunchPage from './screens/LaunchScreen';
+import onBoarding1 from './screens/onBoarding1';
+import onBoarding2 from './screens/onBoarding2';
+import onBoarding3 from './screens/onBoarding3';
+
+import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
+import AddSpeciesRequest from './screens/addSpeciesRequest';
+import ViewOneSpecies from './screens/viewOneSpecies';
+import ResearcherNotifications from './screens/researcherNotifications';
+import EditResearcherRequest from './screens/editResearcherRequest';
+import viewOneSpecies from './screens/viewOneSpecies';
+
+import ClientBottom from './navigation/ClientReporterBottomTab';
+import useNetworkStatus from './src/hooks/useNetworkStatus';
+import FeoBottom from './navigation/FEOBottomNavigation';
+
 import AdminBottomTabs from './navigation/AdminBottomTabs';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [fontsLoaded, setFontsLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        ...Ionicons.font,
+        ...MaterialCommunityIcons.font,
+        ...MaterialIcons.font, // preload MaterialIcons
+      });
+      setFontsLoaded(true);
+    }
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#146C94" />
+      </View>
+    );
+  }
+  
+  useNetworkStatus();
+
+  // Your original navigation structure remains untouched
   return (
     <>
       <NavigationContainer>
@@ -24,6 +65,34 @@ export default function App() {
           />
 
           {/* Tabs as the main navigation
+    <NavigationContainer>
+      <ClientBottom />
+      <Stack.Navigator>
+        <Stack.Screen
+          name="LaunchPage"
+          component={LaunchPage}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="onBoarding1"
+          component={onBoarding1}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="onBoarding2"
+          component={onBoarding2}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="onBoarding3"
+          component={onBoarding3}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="LandingPage"
+          component={LandingPage}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="ResearcherTabs"
           component={ResearcherBottomTabsBottomTabs}
@@ -31,6 +100,8 @@ export default function App() {
         /> */}
           {/* Extra screen for new species request */}
           {/* <Stack.Screen 
+        />
+        <Stack.Screen
           name="AddSpeciesRequest"
           component={AddSpeciesRequest}
           options={{ title: 'Add Species Request' }}
@@ -49,11 +120,20 @@ export default function App() {
             headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
           }}
         />
-        <Stack.Screen 
-          name="EditRequest" 
-          component={EditResearcherRequest} 
+        <Stack.Screen
+          name="EditRequest"
+          component={EditResearcherRequest}
           options={({ route }) => ({
-            title: route.params?.speciesId ? 'Edit Species Request' : 'Add Species Request'
+            title: route.params?.speciesId
+              ? 'Edit Species Request'
+              : 'Add Species Request',
+          })}
+        />
+        <Stack.Screen
+          name="viewOneSpecies"
+          component={viewOneSpecies}
+          options={({ route }) => ({
+            title: route.params?.speciesId ? 'View Species' : 'Search Species',
           })}
         /> */}
         </Stack.Navigator>
