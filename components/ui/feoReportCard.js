@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, StyleSheet, Image, Alert } from "react-na
 import { updateStatus } from "../../src/services/reportService";
 import { createNotification } from "../../src/services/notificationService";
 
-export default function FeoReportCard({ report, onPress }) {
+export default function FeoReportCard({ report, onPress, onStatusUpdate }) {
     console.log('report data in card', report);
     const getReportStatusColor = (status) => {
         switch (status) {
@@ -47,7 +47,16 @@ export default function FeoReportCard({ report, onPress }) {
             console.log('Sending notification:', notificationStatus);
             await createNotification(notificationStatus);
 
-            Alert.alert("Success", `Report marked as ${newStatus}`);
+            Alert.alert("Success", `Report marked as ${newStatus}`, [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        if (onStatusUpdate) {
+                            onStatusUpdate();
+                        }
+                    }
+                }
+            ]);
 
         } catch (error) {
             Alert.alert("Error", "Failed to update report status");
