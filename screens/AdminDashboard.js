@@ -12,67 +12,6 @@ import {
   getTrendData 
 } from '../api/reportApi';
 
-// Mock API functions - replace with your actual API calls
-// const getMonthlyStats = async () => {
-//   // Mock data - replace with actual API call
-//   return {
-//     totalReports: 2847,
-//     pending: 23,
-//     approved: 156,
-//     successRate: 92.6,
-//   };
-// };
-
-// const getRecentReports = async () => {
-//   // Mock data - replace with actual API call
-//   return [
-//     { 
-//       id: 1, 
-//       species: 'Tuna', 
-//       location: 'North Pacific', 
-//       status: 'Pending',
-//       date: '2024-01-15'
-//     },
-//     { 
-//       id: 2, 
-//       species: 'Salmon', 
-//       location: 'Atlantic', 
-//       status: 'Approved',
-//       date: '2024-01-14'
-//     },
-//     { 
-//       id: 3, 
-//       species: 'Mackerel', 
-//       location: 'Indian Ocean', 
-//       status: 'Under Review',
-//       date: '2024-01-13'
-//     },
-//   ];
-// };
-
-// const getTrendData = async () => {
-//   // Mock data - replace with actual API call
-//   return [
-//     { month: 'Jan', incidents: 45 },
-//     { month: 'Feb', incidents: 52 },
-//     { month: 'Mar', incidents: 38 },
-//     { month: 'Apr', incidents: 67 },
-//     { month: 'May', incidents: 58 },
-//     { month: 'Jun', incidents: 72 },
-//   ];
-// };
-
-// const getSpeciesData = async () => {
-//   // Mock data - replace with actual API call
-//   return [
-//     { species: 'Tuna', reports: 24 },
-//     { species: 'Salmon', reports: 16 },
-//     { species: 'Cod', reports: 12 },
-//     { species: 'Mackerel', reports: 6 },
-//     { species: 'Sardines', reports: 3 },
-//   ];
-// };
-
 const AdminDashboard = () => {
   const [recentReports, setRecentReports] = useState([]);
   const [trendData, setTrendData] = useState([]);

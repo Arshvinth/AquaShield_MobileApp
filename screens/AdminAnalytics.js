@@ -4,6 +4,8 @@ import Layout from '../components/layout/Layout';
 import AnalyticsFilters from '../components/adminStatistics/AnalyticsFilters';
 import KeyMetrics from '../components/adminStatistics/KeyMetrics';
 import ChartsGrid from '../components/adminStatistics/ChartsGrid';
+import { getFrequencyData, getStatusData } from '../api/reportApi';
+import { getSpeciesStats } from '../api/speciesApi';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -22,39 +24,6 @@ const COLORS = {
   success: '#16A34A',
 };
 
-// Mock API functions - replace with your actual API calls
-const getFrequencyData = async () => {
-  return [
-    { month: 'Jan', incidents: 45, prevented: 38 },
-    { month: 'Feb', incidents: 52, prevented: 45 },
-    { month: 'Mar', incidents: 38, prevented: 32 },
-    { month: 'Apr', incidents: 67, prevented: 58 },
-    { month: 'May', incidents: 58, prevented: 50 },
-    { month: 'Jun', incidents: 72, prevented: 65 },
-  ];
-};
-
-const getSpeciesStats = async () => {
-  return [
-    { species: 'Bluefin Tuna', count: 24 },
-    { species: 'Atlantic Salmon', count: 18 },
-    { species: 'Atlantic Cod', count: 15 },
-    { species: 'Mackerel', count: 12 },
-    { species: 'Sardines', count: 9 },
-    { species: 'Swordfish', count: 7 },
-    { species: 'Yellowfin Tuna', count: 6 },
-  ];
-};
-
-const getStatusData = async () => {
-  return [
-    { name: 'Approved', value: 156 },
-    { name: 'Pending', value: 23 },
-    { name: 'Rejected', value: 45 },
-    { name: 'Under Review', value: 16 },
-  ];
-};
-
 export function AdminAnalytics() {
   const [frequency, setFrequency] = useState([]);
   const [species, setSpecies] = useState([]);
@@ -65,14 +34,17 @@ export function AdminAnalytics() {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         const [freqData, speciesData, statusData] = await Promise.all([
           getFrequencyData(),
           getSpeciesStats(),
           getStatusData()
         ]);
+
         setFrequency(freqData);
         setSpecies(speciesData);
         setStatus(statusData);
+
       } catch (error) {
         console.error("Error fetching statistics:", error);
       } finally {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { getKeyMetrics } from '../../api/reportApi';
 
 const COLORS = {
   background: '#F6F1F1',
@@ -21,14 +22,14 @@ const COLORS = {
 };
 
 // Mock API function - replace with your actual API
-const getKeyMetrics = async () => {
-  return {
-    totalIncidents: "2,847",
-    prevented: "2,634",
-    preventionRate: 92.6,
-    activeHotspots: 23,
-  };
-};
+// const getKeyMetrics = async () => {
+//   return {
+//     totalIncidents: "2,847",
+//     prevented: "2,634",
+//     preventionRate: 92.6,
+//     activeHotspots: 23,
+//   };
+// };
 
 export function KeyMetrics() {
   const [metrics, setMetrics] = useState([]);
