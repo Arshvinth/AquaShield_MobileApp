@@ -55,6 +55,35 @@ export const getAllReports = async () => {
     }
 }
 
+export const getAllSubmittedReports = async () => {
+    try {
+        const response = await apiClient("/api/report/getAllReports");
+        return response.data || response;
+    } catch (error) {
+        console.log("Error fetching  All reports:", error);
+        throw error;
+    }
+}
+
+export const updateStatus = async (reportid, newStatus) => {
+    try {
+        const response = await apiClient(`/api/report/reportAction/${reportid}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+        return await response;
+
+
+    } catch (error) {
+        console.error("Error updating status:", error);
+        throw error;
+    }
+};
+
 export const deleteReport = async (reportId) => {
     try {
         const response = await apiClient(`/api/report/deleteReport/${reportId}`, { method: 'DELETE' });

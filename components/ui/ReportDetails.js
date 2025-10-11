@@ -91,7 +91,8 @@ export default function ReportDetails({ report, onBack }) {
         });
     };
 
-    useEffect(async () => {
+    useEffect(() => {
+        let isMounted = true;
         const sendNotification = async () => {
             try {
                 const notificationData = {
@@ -107,6 +108,12 @@ export default function ReportDetails({ report, onBack }) {
         };
 
         sendNotification();
+
+        return () => {
+            isMounted = false;
+        };
+
+
     }, []);
 
 

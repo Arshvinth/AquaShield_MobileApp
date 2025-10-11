@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import ResearcherBottomTabsBottomTabs from './navigation/ResearcherBottomTabs';
 import ClientBottom from './navigation/ClientReporterBottomTab';
 import useNetworkStatus from './src/hooks/useNetworkStatus';
+import FeoBottom from './navigation/FEOBottomNavigation';
 
 export default function App() {
 
@@ -11,7 +12,8 @@ export default function App() {
   return (
     <NavigationContainer>
       {/*<ResearcherBottomTabsBottomTabs />*/}
-      <ClientBottom />
+      {/*<ClientBottom />*/}
+      <FeoBottom />
     </NavigationContainer>
   );
 }
