@@ -78,7 +78,7 @@ const AdminDashboard = () => {
             <RecentReports reports={recentReports} />
           </View>
           <View style={styles.halfColumn}>
-            <ActivityMapCard />
+            {/* <ActivityMapCard /> */}
           </View>
         </View>
 
