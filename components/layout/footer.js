@@ -11,13 +11,14 @@ const Footer = () => {
 
 const styles = StyleSheet.create({
   footer: {
-    height: 60,
+    height: 50,
     backgroundColor: '#146C94',
     justifyContent: 'center',
     alignItems: 'center',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    // elevation: 2,
+    elevation: 2,
+    marginBottom:-75
   },
   text: {
     color: '#F6F1F1',

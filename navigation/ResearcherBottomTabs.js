@@ -1,23 +1,23 @@
-// navigation/BottomTabs.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Screens
 import researcherDashboard from '../screens/researcherDashboard';
 import researcherSpeciesRequests from '../screens/researcherSpeciesRequests';
+import SearchSpecies from '../screens/SearchSpecies';
+import SpeciesReports from '../screens/SpeciesReports';
+import ResearcherFavorites from '../screens/researcherFavorites';
+
+// Header Component
+import HeaderRight from '../components/HeaderRight';
 
 const Tab = createBottomTabNavigator();
 
-// Dummy screens for demo
-const DummyScreen = ({ name }) => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text style={{ fontSize: 22 }}>{name}</Text>
-  </View>
-);
-
 // Custom Tab Bar
-const  CustomTabBar = ({ state, descriptors, navigation }) => {
+const CustomTabBar = ({ state, descriptors, navigation }) => {
   return (
     <SafeAreaView edges={['bottom']} style={{ backgroundColor: 'white' }}>
       <View style={styles.tabContainer}>
@@ -73,32 +73,21 @@ export default function BottomTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: true,
-        headerTitle: route.name, // dynamic title based on tab
+        headerTitle: route.name,
         headerTitleStyle: {
           fontSize: 20,
           fontWeight: 'bold',
           color: '#333',
         },
-        headerRight: () => (
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: 'rgba(30,144,255,0.5)', // blue with blur/opacity effect
-              fontSize: 18,
-              marginRight: 16,
-            }}
-          >
-            Aquashield
-          </Text>
-        ),
+        headerRight: () => <HeaderRight />, // Use custom header component
       })}
       tabBar={props => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={researcherDashboard} />
       <Tab.Screen name="Requests" component={researcherSpeciesRequests} />
-      <Tab.Screen name="Search" children={() => <DummyScreen name="Search" />} />
-      <Tab.Screen name="Reports" children={() => <DummyScreen name="Reports" />} />
-      <Tab.Screen name="Favorites" children={() => <DummyScreen name="Favorites" />} />
+      <Tab.Screen name="Search" component={SearchSpecies} />
+      <Tab.Screen name="Reports" component={SpeciesReports} />
+      <Tab.Screen name="Favorites" component={ResearcherFavorites} />
     </Tab.Navigator>
   );
 }
