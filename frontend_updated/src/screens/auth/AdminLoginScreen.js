@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { COLORS } from "../../utils/constants";
 
-const FEOLoginScreen = ({ navigation }) => {
+const AdminLoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +28,7 @@ const FEOLoginScreen = ({ navigation }) => {
     }
 
     setLoading(true);
-    const result = await login({ email, password }, "feo");
+    const result = await login({ email, password }, "admin");
     setLoading(false);
 
     if (!result.success) {
@@ -43,10 +43,10 @@ const FEOLoginScreen = ({ navigation }) => {
     >
       <View style={styles.logoContainer}>
         <View style={styles.logo}>
-          <Icon name="shield" size={60} color={COLORS.white} />
+          <Icon name="lock-closed" size={60} color={COLORS.white} />
         </View>
         <Text style={styles.welcomeText}>WELCOME BACK!</Text>
-        <Text style={styles.subtitle}>FEO Sign In</Text>
+        <Text style={styles.subtitle}>Admin Portal</Text>
       </View>
 
       <View style={styles.formContainer}>
@@ -54,7 +54,7 @@ const FEOLoginScreen = ({ navigation }) => {
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your email"
+            placeholder="Enter admin email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -67,7 +67,7 @@ const FEOLoginScreen = ({ navigation }) => {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
-              placeholder="Enter your password"
+              placeholder="Enter admin password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
@@ -85,12 +85,7 @@ const FEOLoginScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* UPDATED: Forgot Password Link for FEO */}
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("ForgotPassword", { userType: "feo" })
-          }
-        >
+        <TouchableOpacity>
           <Text style={styles.forgotPassword}>Forgot password? Click here</Text>
         </TouchableOpacity>
 
@@ -198,7 +193,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: "right",
     marginBottom: 20,
-    fontWeight: "600",
   },
   signInButton: {
     backgroundColor: COLORS.primary,
@@ -243,4 +237,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FEOLoginScreen;
+export default AdminLoginScreen;
