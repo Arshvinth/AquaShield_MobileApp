@@ -25,120 +25,145 @@ import FeoBottom from './navigation/FEOBottomNavigation';
 
 import AdminBottomTabs from './navigation/AdminBottomTabs';
 
+//Test Ashwin
+import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
+import { AuthProvider } from "./context/AuthContext";
+import AppNavigator from "./navigation/AppNavigator";
+import { COLORS } from "./utils/constants";
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
-  React.useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        ...Ionicons.font,
-        ...MaterialCommunityIcons.font,
-        ...MaterialIcons.font, // preload MaterialIcons
-      });
-      setFontsLoaded(true);
-    }
-    loadFonts();
-  }, []);
+  // React.useEffect(() => {
+  //   async function loadFonts() {
+  //     await Font.loadAsync({
+  //       ...Ionicons.font,
+  //       ...MaterialCommunityIcons.font,
+  //       ...MaterialIcons.font, // preload MaterialIcons
+  //     });
+  //     setFontsLoaded(true);
+  //   }
+  //   loadFonts();
+  // }, []);
 
   if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#146C94" />
-      </View>
-    );
+    // return (
+    //   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    //     <ActivityIndicator size="large" color="#146C94" />
+    //   </View> 
+    // );
   }
-  
+
   useNetworkStatus();
 
   // Your original navigation structure remains untouched
   return (
-    <>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {/* Admin Bottom Tabs as the main navigation */}
-          <Stack.Screen
-            name="AdminTabs"
-            component={AdminBottomTabs}
-            options={{ headerShown: false }}
-          />
+    // <>
+    //   <NavigationContainer>
+    //     <Stack.Navigator>
+    //       {/* <Stack.Screen
+    //         name="loginUI"
+    //         component={LoginScreen}
+    //         options={{ headerShown: false }}
+    //       /> */}
+    //       {/* Admin Bottom Tabs as the main navigation */}
+    //       {/* <Stack.Screen
+    //         name="AdminTabs"
+    //         component={AdminBottomTabs}
+    //         options={{ headerShown: false }}
+    //       /> */}
 
-          {/* Tabs as the main navigation
-    <NavigationContainer>
-      <ClientBottom />
-      <Stack.Navigator>
-        <Stack.Screen
-          name="LaunchPage"
-          component={LaunchPage}
-          options={{ headerShown: false }}
-        />
-         <Stack.Screen
-          name="onBoarding1"
-          component={onBoarding1}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="onBoarding2"
-          component={onBoarding2}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="onBoarding3"
-          component={onBoarding3}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="LandingPage"
-          component={LandingPage}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ResearcherTabs"
-          component={ResearcherBottomTabsBottomTabs}
-          options={{ headerShown: false }}
-        /> */}
-          {/* Extra screen for new species request */}
-          {/* <Stack.Screen 
-        />
-        <Stack.Screen
-          name="AddSpeciesRequest"
-          component={AddSpeciesRequest}
-          options={{ title: 'Add Species Request' }}
-        />
-        <Stack.Screen
-          name="ViewOneSpecies"
-          component={ViewOneSpecies}
-          options={{ headerShown: true }}
-        />
-        <Stack.Screen
-          name="ResearcherNotifications"
-          component={ResearcherNotifications}
-          options={{
-            headerShown: true,
-            headerTitle: 'Notifications',
-            headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
-          }}
-        />
-        <Stack.Screen
-          name="EditRequest"
-          component={EditResearcherRequest}
-          options={({ route }) => ({
-            title: route.params?.speciesId
-              ? 'Edit Species Request'
-              : 'Add Species Request',
-          })}
-        />
-        <Stack.Screen
-          name="viewOneSpecies"
-          component={viewOneSpecies}
-          options={({ route }) => ({
-            title: route.params?.speciesId ? 'View Species' : 'Search Species',
-          })}
-        /> */}
-        </Stack.Navigator>
-      </NavigationContainer>
-      <Toast />
-    </>
+    //       {/* Tabs as the main navigation
+    // <NavigationContainer>
+    //   <ClientBottom />
+    //   <Stack.Navigator>
+    //     <Stack.Screen
+    //       name="LaunchPage"
+    //       component={LaunchPage}
+    //       options={{ headerShown: false }}
+    //     />
+    //      <Stack.Screen
+    //       name="onBoarding1"
+    //       component={onBoarding1}
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen
+    //       name="onBoarding2"
+    //       component={onBoarding2}
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen
+    //       name="onBoarding3"
+    //       component={onBoarding3}
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen
+    //       name="LandingPage"
+    //       component={LandingPage}
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen
+    //       name="ResearcherTabs"
+    //       component={ResearcherBottomTabsBottomTabs}
+    //       options={{ headerShown: false }}
+    //     /> */}
+    //       {/* Extra screen for new species request */}
+    //       {/* <Stack.Screen 
+    //     />
+    //     <Stack.Screen
+    //       name="AddSpeciesRequest"
+    //       component={AddSpeciesRequest}
+    //       options={{ title: 'Add Species Request' }}
+    //     />
+    //     <Stack.Screen
+    //       name="ViewOneSpecies"
+    //       component={ViewOneSpecies}
+    //       options={{ headerShown: true }}
+    //     />
+    //     <Stack.Screen
+    //       name="ResearcherNotifications"
+    //       component={ResearcherNotifications}
+    //       options={{
+    //         headerShown: true,
+    //         headerTitle: 'Notifications',
+    //         headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+    //       }}
+    //     />
+    //     <Stack.Screen
+    //       name="EditRequest"
+    //       component={EditResearcherRequest}
+    //       options={({ route }) => ({
+    //         title: route.params?.speciesId
+    //           ? 'Edit Species Request'
+    //           : 'Add Species Request',
+    //       })}
+    //     />
+    //     <Stack.Screen
+    //       name="viewOneSpecies"
+    //       component={viewOneSpecies}
+    //       options={({ route }) => ({
+    //         title: route.params?.speciesId ? 'View Species' : 'Search Species',
+    //       })}
+    //     /> */}
+    //     </Stack.Navigator>
+    //   </NavigationContainer>
+    //   <Toast />
+    // </>
+    <AuthProvider>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+        <AppNavigator />
+      </SafeAreaView>
+    </AuthProvider>
+
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+});

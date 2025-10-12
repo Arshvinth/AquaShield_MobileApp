@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import Layout from '../components/layout/Layout';
+import Layout from '../components/layout/layout';
 import StatsGrid from '../components/adminDashboard/StatsGrid';
 import ChartsGrid from '../components/adminDashboard/ChartsGrid';
 import RecentReports from '../components/adminDashboard/RecentReports';

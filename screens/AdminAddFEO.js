@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Layout from '../components/layout/Layout';
+import Layout from '../components/layout/layout';
 
 const AdminAddFEO = () => {
   return (
