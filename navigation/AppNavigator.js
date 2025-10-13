@@ -30,6 +30,14 @@ import FEOListScreen from "../screens/admin/FEOListScreen";
 import UpdateFEOScreen from "../screens/admin/UpdateFEOScreen";
 import UserListScreen from "../screens/admin/UserListScreen";
 
+//Researcher Screens
+import ResearcherBottomTabsBottomTabs from '../navigation/ResearcherBottomTabs';
+import AddSpeciesRequest from '../screens/addSpeciesRequest';
+import ViewOneSpecies from '../screens/viewOneSpecies';
+import ResearcherNotifications from '../screens/researcherNotifications';
+import EditResearcherRequest from '../screens/editResearcherRequest';
+import viewOneSpecies from '../screens/viewOneSpecies';
+
 //Added By Ashwin
 import ClientBottom from "../navigation/ClientReporterBottomTab";
 
@@ -101,7 +109,7 @@ const UserTabs = () => (
     })}
   >
     {/* <Tab.Screen name="Profile" component={UserProfileScreen} /> */}
-    
+
     <Tab.Screen name="ClientHome" component={ClientBottom} />
   </Tab.Navigator>
 );
@@ -115,7 +123,7 @@ const UserStack = () => (
       headerTitleStyle: { fontWeight: "bold" },
     }}
   >
-    
+
     <Stack.Screen
       name="UserTabs"
       component={UserTabs}
@@ -130,6 +138,16 @@ const UserStack = () => (
       name="ChangePassword"
       component={ChangePasswordScreen}
       options={{ title: "Change Password" }}
+    />
+    <Stack.Screen
+      name="ResearcherTabs"
+      component={ResearcherBottomTabsBottomTabs}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Login"
+      component={LoginScreen}
+      options={{ headerShown: false }}
     />
   </Stack.Navigator>
 );
@@ -226,6 +244,55 @@ const AdminStack = () => (
       name="UpdateFEO"
       component={UpdateFEOScreen}
       options={{ title: "Update FEO Officer" }}
+    />
+  </Stack.Navigator>
+);
+
+// Admin Stack
+const ResearcherStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="ResearcherTabs"
+      component={ResearcherBottomTabsBottomTabs}
+      options={{ headerShown: false }}
+    />
+    {/* Extra screen for new species request */}
+    <Stack.Screen
+    />
+    <Stack.Screen
+      name="AddSpeciesRequest"
+      component={AddSpeciesRequest}
+      options={{ title: 'Add Species Request' }}
+    />
+    <Stack.Screen
+      name="ViewOneSpecies"
+      component={ViewOneSpecies}
+      options={{ headerShown: true }}
+    />
+    <Stack.Screen
+      name="ResearcherNotifications"
+      component={ResearcherNotifications}
+      options={{
+        headerShown: true,
+        headerTitle: 'Notifications',
+        headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+      }}
+    />
+    <Stack.Screen
+      name="EditRequest"
+      component={EditResearcherRequest}
+      options={({ route }) => ({
+        title: route.params?.speciesId
+          ? 'Edit Species Request'
+          : 'Add Species Request',
+      })}
+    />
+    <Stack.Screen
+      name="viewOneSpecies"
+      component={viewOneSpecies}
+      options={({ route }) => ({
+        title: route.params?.speciesId ? 'View Species' : 'Search Species',
+      })}
     />
   </Stack.Navigator>
 );

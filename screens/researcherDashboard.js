@@ -21,7 +21,7 @@ const Dashboard = () => {
         const [speciesRes, requestsRes, reportsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/species/getAllSpecies`),
           axios.get(`${API_BASE_URL}/speciesRequest/getAllSpeciesRequests`),
-          axios.get(`${API_BASE_URL}/api/report/getAllReportsDashboard`),
+          axios.get(`${API_BASE_URL}/api/report/getAllReportsDashboard`)
         ]);
         setSpeciesData(speciesRes.data);
         setSpeciesRequests(requestsRes.data);

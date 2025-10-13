@@ -26,10 +26,12 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.arshvinth.AquaShield_MobileApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,14 +39,17 @@
     "plugins": [
       "expo-font",
       [
-    "expo-image-picker",
-    {
-      "photosPermission": "The app needs access to your photos to let you share them.",
-      "cameraPermission": "The app needs access to your camera to take photos."
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos to let you share them.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ed66324b-6b82-4eb4-abc4-21a743fc963f"
+      }
     }
-  ]
-
- 
-    ]
   }
 }

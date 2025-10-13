@@ -36,17 +36,17 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
-  // React.useEffect(() => {
-  //   async function loadFonts() {
-  //     await Font.loadAsync({
-  //       ...Ionicons.font,
-  //       ...MaterialCommunityIcons.font,
-  //       ...MaterialIcons.font, // preload MaterialIcons
-  //     });
-  //     setFontsLoaded(true);
-  //   }
-  //   loadFonts();
-  // }, []);
+  React.useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        ...Ionicons.font,
+        ...MaterialCommunityIcons.font,
+        ...MaterialIcons.font, // preload MaterialIcons
+      });
+      setFontsLoaded(true);
+    }
+    loadFonts();
+  }, []);
 
   if (!fontsLoaded) {
     // return (
