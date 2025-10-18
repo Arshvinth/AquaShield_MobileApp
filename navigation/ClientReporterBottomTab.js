@@ -249,24 +249,6 @@ const CustomHeader = ({ title, showProfile = true }) => {
             <Text style={styles.headerTitle}>{title}</Text>
 
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {/* ✅ View as Researcher button */}
-                <TouchableOpacity
-                    style={styles.researcherButton}
-                    onPress={() => navigation.navigate("ResearcherTabs")}
-                >
-                    <Text style={styles.researcherButtonText}>
-                        View as Researcher
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.researcherButton}
-                    onPress={() => navigation.navigate("Login")}
-                >
-                    <Text style={styles.researcherButtonText}>
-                        Logout
-                    </Text>
-                </TouchableOpacity>
 
                 {showProfile && (
                     <TouchableOpacity style={styles.profileButton}>
