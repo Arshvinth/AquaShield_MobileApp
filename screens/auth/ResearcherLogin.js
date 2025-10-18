@@ -1,36 +1,25 @@
-// frontend/src/screens/auth/LoginScreen.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
   Alert,
   ScrollView,
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
-import { useGoogleAuth } from "../../services/googleAuth";
 import { COLORS } from "../../utils/constants";
 
-const LoginScreen = ({ navigation }) => {
+const ResearcherLogin = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login, googleSignIn } = useAuth();
-  const { request, response, promptAsync } = useGoogleAuth();
-
-  // Handle Google Sign In response
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      handleGoogleSignIn(id_token);
-    }
-  }, [response]);
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -39,7 +28,7 @@ const LoginScreen = ({ navigation }) => {
     }
 
     setLoading(true);
-    const result = await login({ email, password }, "user");
+    const result = await login({ email, password }, "researcher");
     setLoading(false);
 
     if (!result.success) {
@@ -47,48 +36,17 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleGoogleSignIn = async (idToken) => {
-    setLoading(true);
-    const result = await googleSignIn(idToken);
-    setLoading(false);
-
-    if (!result.success) {
-      Alert.alert("Google Sign In Failed", result.message);
-    }
-  };
-
-  const handleGooglePress = async () => {
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.error("Google Sign In Error:", error);
-      Alert.alert("Error", "Failed to initiate Google Sign In");
-    }
-  };
-
-  const handleFacebookSignIn = () => {
-    Alert.alert("Coming Soon", "Facebook Sign In will be implemented");
-  };
-
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Icon name="arrow-back" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.logoContainer}>
         <View style={styles.logo}>
-          <Icon name="person" size={60} color={COLORS.white} />
+          <Icon name="lock-closed" size={60} color={COLORS.white} />
         </View>
         <Text style={styles.welcomeText}>WELCOME BACK!</Text>
+        <Text style={styles.subtitle}>Researcher Portal</Text>
       </View>
 
       <View style={styles.formContainer}>
@@ -96,7 +54,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your email"
+            placeholder="Enter researcher email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -109,7 +67,7 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
-              placeholder="Enter your password"
+              placeholder="Enter researcher password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
@@ -128,14 +86,6 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("ForgotPassword", { userType: "user" })
-          }
-        >
-          <Text style={styles.forgotPassword}>Forgot password? Click here</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
           style={styles.signInButton}
           onPress={handleLogin}
           disabled={loading}
@@ -147,49 +97,6 @@ const LoginScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleGooglePress}
-          disabled={!request || loading}
-        >
-          <Icon name="logo-google" size={24} color={COLORS.danger} />
-          <Text style={styles.socialButtonText}>Sign In with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleFacebookSignIn}
-        >
-          <Icon name="logo-facebook" size={24} color="#1877F2" />
-          <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-            <Text style={styles.signUpText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.otherLogins}>
-          <TouchableOpacity onPress={() => navigation.navigate("FEOLogin")}>
-            <Text style={styles.otherLoginText}>FEO Login</Text>
-          </TouchableOpacity>
-          <Text style={styles.separator}> | </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("AdminLogin")}>
-            <Text style={styles.otherLoginText}>Admin Login</Text>
-          </TouchableOpacity>
-          <Text style={styles.separator}> | </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("researcherLogin")}>
-            <Text style={styles.otherLoginText}>Researcher Login</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );
@@ -202,17 +109,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    padding: 30,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  backButton: {
-    padding: 5,
+    padding: 20,
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 40,
+    marginVertical: 40,
   },
   logo: {
     width: 120,
@@ -227,6 +128,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: COLORS.secondary,
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.gray,
   },
   formContainer: {
     flex: 1,
@@ -268,7 +174,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: "right",
     marginBottom: 20,
-    fontWeight: "600",
   },
   signInButton: {
     backgroundColor: COLORS.primary,
@@ -311,33 +216,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.dark,
   },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  footerText: {
-    color: COLORS.gray,
-  },
-  signUpText: {
-    color: COLORS.primary,
-    fontWeight: "bold",
-  },
-  otherLogins: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  otherLoginText: {
-    color: COLORS.secondary,
-    fontWeight: "600",
-  },
-  separator: {
-    color: COLORS.gray,
-  },
 });
 
-
-
-export default LoginScreen;
+export default ResearcherLogin;

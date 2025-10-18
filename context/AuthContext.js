@@ -38,6 +38,8 @@ export const AuthProvider = ({ children }) => {
         response = await authAPI.adminLogin(credentials);
       } else if (loginType === "feo") {
         response = await authAPI.feoLogin(credentials);
+      }else if (loginType === "researcher") {
+        response = await authAPI.researcherLogin(credentials);
       } else {
         response = await authAPI.login(credentials);
       }
@@ -49,6 +51,8 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       setIsAuthenticated(true);
+
+      console.log('Login succedded!');
 
       return { success: true, data: userData };
     } catch (error) {
@@ -190,6 +194,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem("userData");
       setUser(null);
       setIsAuthenticated(false);
+      console.log('USER LOGGED OUT')
     } catch (error) {
       console.error("Error logging out:", error);
     }

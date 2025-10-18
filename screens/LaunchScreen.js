@@ -23,7 +23,7 @@ const LaunchScreen = ({ navigation }) => {
       useNativeDriver: false,
     }).start(() => {
       // Navigate to next screen after animation completes
-      navigation.replace("onBoarding1"); // Replace "NextScreen" with your target screen name
+      navigation.replace("OnBoarding1"); 
     });
   }, []);
 

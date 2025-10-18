@@ -102,6 +102,7 @@ export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
   feoLogin: (data) => api.post("/auth/feo-login", data),
+  researcherLogin: (data) => api.post("/auth/researcher-login", data),
   adminLogin: (data) => api.post("/auth/admin-login", data),
   getMe: () => api.get("/auth/me"),
 

@@ -13,6 +13,7 @@ import FEOLoginScreen from "../screens/auth/FEOLoginScreen";
 import AdminLoginScreen from "../screens/auth/AdminLoginScreen";
 import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
+import ResearcherLogin from "../screens/auth/ResearcherLogin";
 
 // User Screens
 import UserProfileScreen from "../screens/user/UserProfileScreen";
@@ -38,6 +39,12 @@ import ResearcherNotifications from '../screens/researcherNotifications';
 import EditResearcherRequest from '../screens/editResearcherRequest';
 import viewOneSpecies from '../screens/viewOneSpecies';
 
+//welcome screens
+import LaunchScreen from '../screens/LaunchScreen';
+import OnBoarding1 from '../screens/onBoarding1';
+import OnBoarding2 from '../screens/onBoarding2';
+import OnBoarding3 from '../screens/onBoarding3';
+
 //Added By Ashwin
 import ClientBottom from "../navigation/ClientReporterBottomTab";
 
@@ -53,6 +60,28 @@ const AuthStack = () => (
       headerTitleStyle: { fontWeight: "bold" },
     }}
   >
+    {/* Launch Screens*/}
+    <Stack.Screen
+      name="launchScreen"
+      component={LaunchScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="OnBoarding1"
+      component={OnBoarding1}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="OnBoarding2"
+      component={OnBoarding2}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="OnBoarding3"
+      component={OnBoarding3}
+      options={{ headerShown: false }}
+    />
+    {/* Launch Screens*/}
     <Stack.Screen
       name="Login"
       component={LoginScreen}
@@ -72,6 +101,11 @@ const AuthStack = () => (
       name="AdminLogin"
       component={AdminLoginScreen}
       options={{ title: "Admin Sign In" }}
+    />
+    <Stack.Screen
+      name="researcherLogin"
+      component={ResearcherLogin}
+      options={{ title: "Researcher Sign In" }}
     />
     <Stack.Screen
       name="ForgotPassword"
@@ -148,6 +182,58 @@ const UserStack = () => (
       name="Login"
       component={LoginScreen}
       options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
+);
+
+// User Stack
+const ResearcherStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerStyle: { backgroundColor: COLORS.primary },
+      headerTintColor: COLORS.white,
+      headerTitleStyle: { fontWeight: "bold" },
+    }}
+  >
+    <Stack.Screen
+      name="ResearcherTabs"
+      component={ResearcherBottomTabsBottomTabs}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="AddSpeciesRequest"
+      component={AddSpeciesRequest}
+      options={{ title: 'Add Species Request' }}
+    />
+    <Stack.Screen
+      name="ViewOneSpecies"
+      component={ViewOneSpecies}
+      options={{ headerShown: true }}
+    />
+    <Stack.Screen
+      name="ResearcherNotifications"
+      component={ResearcherNotifications}
+      options={{
+        headerShown: true,
+        headerTitle: 'Notifications',
+        headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+      }}
+    />
+    <Stack.Screen
+      name="EditRequest"
+      component={EditResearcherRequest}
+      options={({ route }) => ({
+        title: route.params?.speciesId
+          ? 'Edit Species Request'
+          : 'Add Species Request',
+      })}
+    />
+    <Stack.Screen
+      name="viewOneSpecies"
+      component={viewOneSpecies}
+      options={({ route }) => ({
+        title: route.params?.speciesId ? 'View Species' : 'Search Species',
+      })}
     />
   </Stack.Navigator>
 );
@@ -248,54 +334,6 @@ const AdminStack = () => (
   </Stack.Navigator>
 );
 
-// Admin Stack
-const ResearcherStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="ResearcherTabs"
-      component={ResearcherBottomTabsBottomTabs}
-      options={{ headerShown: false }}
-    />
-    {/* Extra screen for new species request */}
-    <Stack.Screen
-    />
-    <Stack.Screen
-      name="AddSpeciesRequest"
-      component={AddSpeciesRequest}
-      options={{ title: 'Add Species Request' }}
-    />
-    <Stack.Screen
-      name="ViewOneSpecies"
-      component={ViewOneSpecies}
-      options={{ headerShown: true }}
-    />
-    <Stack.Screen
-      name="ResearcherNotifications"
-      component={ResearcherNotifications}
-      options={{
-        headerShown: true,
-        headerTitle: 'Notifications',
-        headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
-      }}
-    />
-    <Stack.Screen
-      name="EditRequest"
-      component={EditResearcherRequest}
-      options={({ route }) => ({
-        title: route.params?.speciesId
-          ? 'Edit Species Request'
-          : 'Add Species Request',
-      })}
-    />
-    <Stack.Screen
-      name="viewOneSpecies"
-      component={viewOneSpecies}
-      options={({ route }) => ({
-        title: route.params?.speciesId ? 'View Species' : 'Search Species',
-      })}
-    />
-  </Stack.Navigator>
-);
 
 const AppNavigator = () => {
   const { isAuthenticated, user, loading } = useAuth();
@@ -316,7 +354,9 @@ const AppNavigator = () => {
     if (user?.userType === "feo") {
       return <FEOStack />;
     }
-
+    if (user?.role === "researcher") {
+      return <ResearcherStack />;
+    }
     return <UserStack />;
   };
 

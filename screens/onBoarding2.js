@@ -6,11 +6,11 @@ const { width, height } = Dimensions.get("window");
 
 const OnboardingScreen2 = ({ navigation }) => {
   const onSwipeLeft = () => {
-    navigation.navigate("onBoarding3"); // go to next screen
+    navigation.navigate("OnBoarding3"); // go to next screen
   };
 
   const onSwipeRight = () => {
-    navigation.navigate("onBoarding1"); // go back to previous screen
+    navigation.navigate("OnBoarding1"); // go back to previous screen
   };
 
   return (

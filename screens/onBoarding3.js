@@ -13,11 +13,11 @@ const { width, height } = Dimensions.get("window");
 
 const OnboardingScreen3 = ({ navigation }) => {
   const onSwipeRight = () => {
-    navigation.navigate("onBoarding2"); // go back to previous screen
+    navigation.navigate("OnBoarding2"); // go back to previous screen
   };
 
   const handleGetStarted = () => {
-    navigation.navigate("LandingPage"); // go to landing page
+    navigation.navigate("Login"); // go to landing page
   };
 
   return (
