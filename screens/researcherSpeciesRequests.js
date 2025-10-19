@@ -8,20 +8,24 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import Layout from "../components/layout/layout";
+import { useIsFocused } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
+import Layout from "../components/layout/layout";
 import { API_BASE_URL } from "../config";
 
 const ResearcherSpeciesRequests = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isFocused = useIsFocused(); 
 
-  // Fetch species requests
+  // Fetch all species requests
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/speciesRequest/getAllSpeciesRequests`);
+      const res = await axios.get(
+        `${API_BASE_URL}/speciesRequest/getAllSpeciesRequests`
+      );
       setData(res.data);
     } catch (error) {
       console.error("Error fetching species requests:", error);
@@ -31,6 +35,7 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
     }
   };
 
+  // Delete handler with confirmation
   const handleDelete = (speciesId, speciesName) => {
     Alert.alert(
       "Confirm Delete",
@@ -46,7 +51,7 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
                 `${API_BASE_URL}/speciesRequest/deleteSpeciesRequest/${speciesId}`
               );
               Alert.alert("Deleted", `${speciesName} has been deleted.`);
-              fetchData();
+              fetchData(); // Refresh list
             } catch (err) {
               console.error("Delete failed:", err);
               Alert.alert("Error", "Failed to delete species request.");
@@ -57,9 +62,12 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
     );
   };
 
+  // Refetch when screen becomes visible
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isFocused) {
+      fetchData();
+    }
+  }, [isFocused]);
 
   if (loading) {
     return (
@@ -74,8 +82,11 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
 
   return (
     <Layout>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Page Title */}
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Title */}
         <Text style={styles.pageTitle}>My Species Requests</Text>
 
         {/* Table Header */}
@@ -95,9 +106,11 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
         {data.length > 0 ? (
           data.map((item) => (
             <View key={item._id} style={styles.row}>
-              {/* Date & Species stacked */}
+              {/* Date & Species */}
               <View style={styles.dateSpeciesCol}>
-                <Text style={styles.dateText}>{item.updatedDate?.split("T")[0]}</Text>
+                <Text style={styles.dateText}>
+                  {item.updatedDate?.split("T")[0]}
+                </Text>
                 <Text style={styles.speciesName}>
                   {item.ScientificName || item.CommonName}
                 </Text>
@@ -144,13 +157,15 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
           <Text style={styles.noDataText}>No species requests found.</Text>
         )}
 
-        {/* Add Button */}
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate("AddSpeciesRequest")}
-        >
-          <Text style={styles.addButtonText}>+ Add New Request</Text>
-        </TouchableOpacity>
+        {/* Add New Request Button */}
+        <View style={styles.addButtonWrapper}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate("AddSpeciesRequest")}
+          >
+            <Text style={styles.addButtonText}>+ Add New Request</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </Layout>
   );
@@ -158,9 +173,10 @@ const ResearcherSpeciesRequests = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 1,
+    padding: 5,
     backgroundColor: "#F6F1F1",
-    paddingBottom: 80,
+    paddingBottom: 40,
+    minHeight: "100%",
   },
   loaderContainer: {
     flex: 1,
@@ -241,14 +257,20 @@ const styles = StyleSheet.create({
   statusRejected: { backgroundColor: "#FF5252" },
   statusPending: { backgroundColor: "#FFB300" },
   iconBtn: { marginRight: 10 },
-  addButton: {
+  addButtonWrapper: {
     marginTop: 25,
-    backgroundColor: "#19A7CE",
-    paddingVertical: 12,
-    borderRadius: 14,
-    height:'15%',
-    width:'60%',
     alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 50, 
+  },
+  addButton: {
+    backgroundColor: "#19A7CE",
+    paddingVertical: 14,
+    paddingHorizontal: 25,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "70%",
     shadowColor: "#19A7CE",
     shadowOpacity: 0.3,
     shadowRadius: 6,
