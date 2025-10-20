@@ -11,11 +11,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveReportOffline } from '../../src/services/offlineService';
 import { useNavigation } from '@react-navigation/native';
 import { createNotification } from '../../src/services/notificationService';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function ClientReportIncident() {
 
     const navigation = useNavigation();
+    const { userId, isAuthenticated, user } = useAuth();
 
     const initialFormData = {
         locationInfo: {
@@ -223,7 +225,7 @@ export default function ClientReportIncident() {
 
         if (state.isConnected) {
             try {
-                await createNewReport(formData);
+                await createNewReport(formData, userId);
 
                 const notificationData = {
                     title: "Report Submitted Successfully",

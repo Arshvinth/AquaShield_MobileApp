@@ -7,9 +7,11 @@ import { deleteReport, getAllReports } from '../../src/services/reportService';
 import ReportDetails from '../../components/ui/ReportDetails';
 import { createNotification } from '../../src/services/notificationService';
 import ReportUpdateForm from '../../components/ui/ReportUpdate';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MyReport() {
 
+    const { userId, isAuthenticated } = useAuth();
     const [activeTab, setActiveTab] = useState('All');
     const [selectReport, setSelectReport] = useState(null);
     const [reportPosition, setReportPosition] = useState({ x: 0, y: 0 });
@@ -73,7 +75,7 @@ export default function MyReport() {
             setLoading(true);
             setError(null);
             console.log('Fetching incident types...');
-            const types = await getAllReports();
+            const types = await getAllReports(userId);
             console.log('Received incident types:', types);
             setReports(types);
         } catch (err) {
