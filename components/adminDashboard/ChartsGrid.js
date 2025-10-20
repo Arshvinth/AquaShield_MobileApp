@@ -25,10 +25,44 @@ const CHART_MIN_WIDTH = 250;
 const CHART_PADDING = 50;
 
 const ChartsGrid = ({ trendData, speciesData }) => {
+  const noTrendData = !trendData || trendData.length === 0;
+  const noSpeciesData = !speciesData || speciesData.length === 0;
+
   return (
     <View style={styles.gridContainer}>
-      <IncidentTrendsChart data={trendData} />
-      <TopSpeciesChart data={speciesData} />
+      {/* Incident Trends Chart */}
+      {noTrendData ? (
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Incident Trends</Text>
+            <Text style={styles.cardDescription}>
+              Monthly illegal fishing incidents over time
+            </Text>
+          </View>
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No data found (backend not connected)</Text>
+          </View>
+        </View>
+      ) : (
+        <IncidentTrendsChart data={trendData} />
+      )}
+
+      {/* Top Species Chart */}
+      {noSpeciesData ? (
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Top Species</Text>
+            <Text style={styles.cardDescription}>
+              Most frequently caught species
+            </Text>
+          </View>
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No data found (backend not connected)</Text>
+          </View>
+        </View>
+      ) : (
+        <TopSpeciesChart data={speciesData} />
+      )}
     </View>
   );
 };
@@ -319,6 +353,15 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  noDataContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 120,
+  },
+  noDataText: {
+    color: "#999",
+    fontStyle: "italic",
   },
 });
 
