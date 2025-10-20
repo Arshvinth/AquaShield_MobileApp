@@ -12,12 +12,14 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import Icon from "react-native-vector-icons/Ionicons";
 import { feoAPI } from "../../services/api";
 import { COLORS, DEPARTMENTS } from "../../utils/constants";
 
 const AddFEOScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     department: "",
@@ -29,11 +31,32 @@ const AddFEOScreen = ({ navigation }) => {
     officeContact: "",
     password: "",
     confirmPassword: "",
-    profileImage: null,
+    profileImageBase64: null, // NEW: Store Base64 string
   });
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
+  };
+
+  // NEW: Convert image to Base64 using ImageManipulator
+  const convertImageToBase64 = async (uri) => {
+    try {
+      // Manipulate image and get Base64
+      const manipResult = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 500, height: 500 } }], // Resize to 500x500
+        {
+          compress: 0.7,
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true, // Request Base64 output
+        }
+      );
+
+      return manipResult.base64;
+    } catch (error) {
+      console.error("Error converting image to Base64:", error);
+      throw error;
+    }
   };
 
   const pickImage = async () => {
@@ -47,22 +70,36 @@ const AddFEOScreen = ({ navigation }) => {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+    setImageLoading(true);
 
-    if (!result.canceled) {
-      setFormData({
-        ...formData,
-        profileImage: {
-          uri: result.assets[0].uri,
-          type: "image/jpeg",
-          fileName: "profile.jpg",
-        },
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
       });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
+        console.log("📸 Image selected:", asset.uri);
+
+        // Convert to Base64
+        const base64String = await convertImageToBase64(asset.uri);
+        console.log("✅ Image converted to Base64");
+
+        setFormData({
+          ...formData,
+          profileImageBase64: base64String,
+        });
+
+        Alert.alert("Success", "Image selected successfully");
+      }
+    } catch (error) {
+      console.error("❌ Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image");
+    } finally {
+      setImageLoading(false);
     }
   };
 
@@ -107,13 +144,25 @@ const AddFEOScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const dataToSend = { ...formData };
-      delete dataToSend.confirmPassword;
+      // Prepare data to send (with Base64 image)
+      const dataToSend = {
+        fullName: formData.fullName,
+        department: formData.department,
+        designation: formData.designation,
+        employeeId: formData.employeeId,
+        assignedArea: formData.assignedArea,
+        nicNo: formData.nicNo,
+        email: formData.email,
+        officeContact: formData.officeContact,
+        password: formData.password,
+      };
 
-      console.log("Submitting FEO data:", {
-        ...dataToSend,
-        password: "[HIDDEN]",
-      });
+      // Add Base64 image if exists
+      if (formData.profileImageBase64) {
+        dataToSend.profileImageBase64 = formData.profileImageBase64;
+      }
+
+      console.log("Submitting FEO data with Base64...");
 
       const response = await feoAPI.createFEO(dataToSend);
 
@@ -124,7 +173,6 @@ const AddFEOScreen = ({ navigation }) => {
       ]);
     } catch (error) {
       console.error("Error creating FEO:", error);
-      console.error("Error response:", error.response?.data);
 
       const errorMessage =
         error.response?.data?.message ||
@@ -135,6 +183,13 @@ const AddFEOScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getImageUri = () => {
+    if (formData.profileImageBase64) {
+      return `data:image/jpeg;base64,${formData.profileImageBase64}`;
+    }
+    return null;
   };
 
   return (
@@ -162,19 +217,27 @@ const AddFEOScreen = ({ navigation }) => {
 
       <View style={styles.formContainer}>
         <View style={styles.avatarSection}>
-          {formData.profileImage ? (
-            <Image
-              source={{ uri: formData.profileImage.uri }}
-              style={styles.avatar}
-            />
+          {getImageUri() ? (
+            <Image source={{ uri: getImageUri() }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Icon name="person" size={40} color={COLORS.gray} />
             </View>
           )}
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Choose file</Text>
+          <TouchableOpacity
+            style={styles.uploadButton}
+            onPress={pickImage}
+            disabled={imageLoading}
+          >
+            {imageLoading ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <Text style={styles.uploadButtonText}>Choose file</Text>
+            )}
           </TouchableOpacity>
+          {formData.profileImageBase64 && (
+            <Text style={styles.imageSelectedText}>✓ Image ready</Text>
+          )}
         </View>
 
         <TextInput
@@ -330,6 +393,11 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: COLORS.white,
     fontSize: 14,
+  },
+  imageSelectedText: {
+    color: COLORS.success,
+    marginTop: 5,
+    fontSize: 12,
   },
   input: {
     borderWidth: 1,

@@ -30,160 +30,80 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (credentials, loginType = "user") => {
+  const login = async (credentials, userType = "user") => {
     try {
+      const endpoint =
+        userType === "feo"
+          ? "/auth/feo-login"
+          : userType === "admin"
+          ? "/auth/admin-login"
+          : "/auth/login";
+
       let response;
-
-      if (loginType === "admin") {
-        response = await authAPI.adminLogin(credentials);
-      } else if (loginType === "feo") {
-        response = await authAPI.feoLogin(credentials);
-      }else if (loginType === "researcher") {
-        response = await authAPI.researcherLogin(credentials);
-      } else {
+      if (endpoint === "/auth/login") {
         response = await authAPI.login(credentials);
+      } else if (endpoint === "/auth/feo-login") {
+        response = await authAPI.feoLogin(credentials);
+      } else if (endpoint === "/auth/admin-login") {
+        response = await authAPI.adminLogin(credentials);
       }
 
-      const { token, ...userData } = response.data;
+      console.log("🔐 Login response:", response.data);
 
+      // ✅ Handle nested structure safely
+      const token = response.data?.token;
+      const userData =
+        response.data?.user?.user || response.data?.user || response.data;
+
+      if (!token || !userData) {
+        console.error("Missing token or user in response:", response.data);
+        throw new Error("Invalid login response");
+      }
+
+      // ✅ Save clean user and token
       await AsyncStorage.setItem("userToken", token);
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
       setUser(userData);
       setIsAuthenticated(true);
 
-      console.log('Login succedded!');
-
-      return { success: true, data: userData };
+      return { success: true };
     } catch (error) {
-      console.error("Login error:", error);
-
-      let errorMessage = "Login failed. Please try again.";
-
-      if (error.code === "ECONNREFUSED" || error.code === "ERR_NETWORK") {
-        errorMessage =
-          "Cannot connect to server. Please check your internet connection.";
-      } else if (error.response) {
-        errorMessage =
-          error.response.data?.message ||
-          `Server error: ${error.response.status}`;
-      } else if (error.request) {
-        errorMessage =
-          "No response from server. Please check if the backend is running.";
-      }
-
+      console.error("Login failed:", error.response?.data || error.message);
       return {
         success: false,
-        message: errorMessage,
-      };
-    }
-  };
-
-  // NEW: Google Sign In
-  const googleSignIn = async (idToken) => {
-    try {
-      console.log("🔐 Starting Google Sign In...");
-      const response = await authAPI.googleSignIn(idToken);
-
-      const { token, ...userData } = response.data;
-
-      await AsyncStorage.setItem("userToken", token);
-      await AsyncStorage.setItem("userData", JSON.stringify(userData));
-
-      setUser(userData);
-      setIsAuthenticated(true);
-
-      console.log("✅ Google Sign In successful");
-      return { success: true, data: userData };
-    } catch (error) {
-      console.error("❌ Google Sign In error:", error);
-
-      let errorMessage = "Google Sign In failed. Please try again.";
-
-      if (error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-      } else if (error.request) {
-        errorMessage =
-          "Cannot connect to server. Please check your connection.";
-      }
-
-      return {
-        success: false,
-        message: errorMessage,
+        message: error.response?.data?.message || "Login failed",
       };
     }
   };
 
   const register = async (userData) => {
     try {
-      console.log("=== Starting Registration ===");
-      console.log("Registration data:", JSON.stringify(userData, null, 2));
-
       const response = await authAPI.register(userData);
 
-      console.log("✅ Registration API call successful");
-      console.log("Response data:", response.data);
+      if (response.data?.token && response.data?.user) {
+        await AsyncStorage.setItem("userToken", response.data.token);
+        await AsyncStorage.setItem(
+          "userData",
+          JSON.stringify(response.data.user)
+        );
 
-      const { token, ...user } = response.data;
+        setUser(response.data.user);
+        setIsAuthenticated(true);
 
-      if (!token) {
-        throw new Error("No token received from server");
-      }
-
-      await AsyncStorage.setItem("userToken", token);
-      await AsyncStorage.setItem("userData", JSON.stringify(user));
-
-      setUser(user);
-      setIsAuthenticated(true);
-
-      console.log("✅ Registration complete");
-      return { success: true, data: user };
-    } catch (error) {
-      console.error("❌ Registration error:", error);
-
-      let errorMessage = "Registration failed. Please try again.";
-
-      if (error.code === "ECONNREFUSED") {
-        console.error("❌ Connection refused - Backend not running");
-        errorMessage =
-          "Cannot connect to server. Please ensure the backend is running on port 5001.";
-      } else if (
-        error.code === "ERR_NETWORK" ||
-        error.message === "Network Error"
-      ) {
-        console.error("❌ Network error");
-        errorMessage =
-          "Network error. Please check:\n1. Backend is running\n2. Firewall allows port 5001\n3. Using correct IP (10.0.2.2 for emulator)";
-      } else if (error.response) {
-        console.error("❌ Server responded with error:", error.response.status);
-        console.error("Error data:", error.response.data);
-
-        if (error.response.status === 400) {
-          errorMessage =
-            error.response.data?.message || "Invalid registration data";
-        } else if (error.response.status === 403) {
-          errorMessage =
-            error.response.data?.message ||
-            "Access forbidden. Please check server configuration.";
-        } else if (error.response.status === 500) {
-          errorMessage = "Server error. Please check backend logs.";
-        } else {
-          errorMessage =
-            error.response.data?.message ||
-            `Server error: ${error.response.status}`;
-        }
-      } else if (error.request) {
-        console.error("❌ No response received");
-        console.error("Request:", error.request);
-        errorMessage = "No response from server. Backend may not be running.";
+        return {
+          success: true,
+          token: response.data.token,
+          user: response.data.user,
+        };
       } else {
-        console.error("❌ Error:", error.message);
-        errorMessage = error.message || "An unexpected error occurred";
+        return { success: false, message: "Invalid registration response" };
       }
-
+    } catch (error) {
+      console.log("Registration error:", error.response?.data || error.message);
       return {
         success: false,
-        message: errorMessage,
+        message: error.response?.data?.message || error.message,
       };
     }
   };
@@ -194,7 +114,6 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem("userData");
       setUser(null);
       setIsAuthenticated(false);
-      console.log('USER LOGGED OUT')
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -217,7 +136,6 @@ export const AuthProvider = ({ children }) => {
         loading,
         isAuthenticated,
         login,
-        googleSignIn, // NEW
         register,
         logout,
         updateUserData,

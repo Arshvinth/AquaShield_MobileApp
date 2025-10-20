@@ -85,7 +85,14 @@ const UserListScreen = ({ navigation }) => {
     <View style={styles.userCard}>
       <View style={styles.userHeader}>
         <View style={styles.userInfo}>
-          {item.profileImage?.url ? (
+          {item.profileImage?.base64 ? (
+            <Image
+              source={{
+                uri: `data:image/jpeg;base64,${item.profileImage.base64}`,
+              }}
+              style={styles.userAvatar}
+            />
+          ) : item.profileImage?.url ? (
             <Image
               source={{ uri: item.profileImage.url }}
               style={styles.userAvatar}

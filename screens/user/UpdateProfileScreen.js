@@ -12,6 +12,7 @@ import {
   Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { userAPI } from "../../services/api";
@@ -27,7 +28,7 @@ const UpdateProfileScreen = ({ navigation }) => {
     email: "",
     contactNo: "",
     address: "",
-    profileImage: null,
+    profileImageBase64: null, // NEW: Store Base64 string
   });
 
   useEffect(() => {
@@ -43,9 +44,9 @@ const UpdateProfileScreen = ({ navigation }) => {
         email: response.data.email,
         contactNo: response.data.contactNo || "",
         address: response.data.address || "",
-        profileImage: response.data.profileImage,
+        profileImageBase64: response.data.profileImage?.base64 || null,
       });
-      console.log("✅ Profile loaded:", response.data);
+      console.log("✅ Profile loaded");
     } catch (error) {
       console.error("❌ Error loading profile:", error);
       Alert.alert("Error", "Failed to load profile");
@@ -71,6 +72,27 @@ const UpdateProfileScreen = ({ navigation }) => {
     return true;
   };
 
+  // NEW: Convert image to Base64 using ImageManipulator
+  const convertImageToBase64 = async (uri) => {
+    try {
+      // Manipulate image and get Base64
+      const manipResult = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 500, height: 500 } }], // Resize to 500x500
+        {
+          compress: 0.7,
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true, // Request Base64 output
+        }
+      );
+
+      return manipResult.base64;
+    } catch (error) {
+      console.error("Error converting image to Base64:", error);
+      throw error;
+    }
+  };
+
   const pickImage = async () => {
     try {
       const hasPermission = await requestPermissions();
@@ -89,11 +111,16 @@ const UpdateProfileScreen = ({ navigation }) => {
         const asset = result.assets[0];
         console.log("📸 Image selected:", asset.uri);
 
+        // Convert to Base64
+        const base64String = await convertImageToBase64(asset.uri);
+        console.log(
+          "✅ Image converted to Base64, length:",
+          base64String.length
+        );
+
         setFormData({
           ...formData,
-          profileImage: {
-            uri: asset.uri,
-          },
+          profileImageBase64: base64String,
         });
 
         Alert.alert("Success", "Image selected successfully");
@@ -123,11 +150,23 @@ const UpdateProfileScreen = ({ navigation }) => {
     setLoading(true);
 
     try {
-      console.log("📤 Starting profile update...");
-      console.log("📊 Form data keys:", Object.keys(formData));
-      console.log("📸 Has image?", !!formData.profileImage?.uri);
+      console.log("📤 Starting profile update with Base64...");
 
-      const response = await userAPI.updateProfile(formData);
+      // Prepare data to send
+      const updateData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        contactNo: formData.contactNo,
+        address: formData.address,
+      };
+
+      // Add Base64 image if exists
+      if (formData.profileImageBase64) {
+        updateData.profileImageBase64 = formData.profileImageBase64;
+      }
+
+      const response = await userAPI.updateProfile(updateData);
 
       console.log("✅ Profile updated successfully");
 
@@ -137,31 +176,26 @@ const UpdateProfileScreen = ({ navigation }) => {
       Alert.alert("Success", "Profile updated successfully", [
         {
           text: "OK",
-          onPress: () => navigation.goBack(),
+          onPress: () => navigation.navigate("UserTabs", { screen: "Profile" }),
         },
       ]);
     } catch (error) {
       console.error("❌ Error updating profile:", error);
 
-      // Better error handling
       let errorMessage = "Failed to update profile. Please try again.";
 
       if (error.message) {
         errorMessage = error.message;
       }
 
-      // Check for specific error types
       if (error.message?.includes("Network request failed")) {
         errorMessage =
-          "Cannot connect to server. Please check:\n" +
-          "1. Backend is running\n" +
-          "2. You have internet connection\n" +
-          "3. Backend is accessible";
+          "Cannot connect to server. Please check your connection.";
       } else if (error.message?.includes("timeout")) {
         errorMessage =
           "Request timed out. Please try again with a smaller image.";
-      } else if (error.message?.includes("Invalid credentials")) {
-        errorMessage = "Authentication failed. Please login again.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
       }
 
       Alert.alert("Error", errorMessage);
@@ -171,11 +205,9 @@ const UpdateProfileScreen = ({ navigation }) => {
   };
 
   const getImageUri = () => {
-    if (formData.profileImage?.uri) {
-      return formData.profileImage.uri;
-    }
-    if (formData.profileImage?.url) {
-      return formData.profileImage.url;
+    // NEW: Convert Base64 back to displayable format
+    if (formData.profileImageBase64) {
+      return `data:image/jpeg;base64,${formData.profileImageBase64}`;
     }
     return null;
   };
@@ -219,8 +251,8 @@ const UpdateProfileScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        {formData.profileImage?.uri && (
-          <Text style={styles.imageSelectedText}>✓ New image selected</Text>
+        {formData.profileImageBase64 && (
+          <Text style={styles.imageSelectedText}>✓ Image ready to upload</Text>
         )}
       </View>
 

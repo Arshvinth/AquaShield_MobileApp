@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { COLORS } from "../../utils/constants";
+import { authAPI } from "../../services/api";
 
 const SignUpScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -62,18 +63,36 @@ const SignUpScreen = ({ navigation }) => {
     }
 
     setLoading(true);
-    const result = await register({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      contactNo: formData.contactNo,
-      address: formData.address,
-      password: formData.password,
-    });
-    setLoading(false);
+    try {
+      const response = await authAPI.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        contactNo: formData.contactNo,
+        address: formData.address,
+        password: formData.password,
+      });
 
-    if (!result.success) {
-      Alert.alert("Registration Failed", result.message);
+      console.log("Full response:", response);
+      console.log("Response data:", response.data);
+      console.log("Token:", response.data.token);
+
+      if (response.data.success) {
+        Alert.alert("Success", "Registration successful!");
+        console.log("Token received:", response.data.token);
+        // Save token and navigate
+      } else {
+        Alert.alert("Registration Failed", response.data.message);
+      }
+    } catch (error) {
+      console.log("Registration error:", error);
+      console.log("Error response:", error.response?.data);
+      Alert.alert(
+        "Registration Failed",
+        error.response?.data?.message || error.message
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -205,22 +224,6 @@ const SignUpScreen = ({ navigation }) => {
           ) : (
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           )}
-        </TouchableOpacity>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Icon name="logo-google" size={24} color={COLORS.danger} />
-          <Text style={styles.socialButtonText}>Sign Up with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Icon name="logo-facebook" size={24} color="#1877F2" />
-          <Text style={styles.socialButtonText}>Sign Up with Facebook</Text>
         </TouchableOpacity>
 
         <View style={styles.footer}>

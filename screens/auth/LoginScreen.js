@@ -3,38 +3,34 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
   Alert,
   ScrollView,
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
-import { useGoogleAuth } from "../../services/googleAuth";
 import { COLORS } from "../../utils/constants";
 
 const LoginScreen = ({ navigation }) => {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login, googleSignIn } = useAuth();
-  const { request, response, promptAsync } = useGoogleAuth();
-
-  // Handle Google Sign In response
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      handleGoogleSignIn(id_token);
-    }
-  }, [response]);
-
+  // Regular email/password login
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
       return;
     }
 
@@ -42,32 +38,19 @@ const LoginScreen = ({ navigation }) => {
     const result = await login({ email, password }, "user");
     setLoading(false);
 
-    if (!result.success) {
+    if (result.success) {
+      Alert.alert("Success", "Login successful!");
+
+      // 👇 Navigate straight to User Profile tab
+      navigation.reset({
+        index: 0,
+        routes: [
+          { name: "UserTabs", state: { routes: [{ name: "Profile" }] } },
+        ],
+      });
+    } else {
       Alert.alert("Login Failed", result.message);
     }
-  };
-
-  const handleGoogleSignIn = async (idToken) => {
-    setLoading(true);
-    const result = await googleSignIn(idToken);
-    setLoading(false);
-
-    if (!result.success) {
-      Alert.alert("Google Sign In Failed", result.message);
-    }
-  };
-
-  const handleGooglePress = async () => {
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.error("Google Sign In Error:", error);
-      Alert.alert("Error", "Failed to initiate Google Sign In");
-    }
-  };
-
-  const handleFacebookSignIn = () => {
-    Alert.alert("Coming Soon", "Facebook Sign In will be implemented");
   };
 
   return (
@@ -89,34 +72,54 @@ const LoginScreen = ({ navigation }) => {
           <Icon name="person" size={60} color={COLORS.white} />
         </View>
         <Text style={styles.welcomeText}>WELCOME BACK!</Text>
+        <Text style={styles.subtitle}>Sign in to continue</Text>
       </View>
 
       <View style={styles.formContainer}>
+        {/* Email Input */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+          <View style={styles.inputWrapper}>
+            <Icon
+              name="mail-outline"
+              size={20}
+              color={COLORS.gray}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!loading}
+            />
+          </View>
         </View>
 
+        {/* Password Input */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordContainer}>
+            <Icon
+              name="lock-closed-outline"
+              size={20}
+              color={COLORS.gray}
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.passwordInput}
               placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
+              editable={!loading}
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
               style={styles.eyeIcon}
+              disabled={loading}
             >
               <Icon
                 name={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -127,16 +130,19 @@ const LoginScreen = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Forgot Password */}
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("ForgotPassword", { userType: "user" })
           }
+          disabled={loading}
         >
           <Text style={styles.forgotPassword}>Forgot password? Click here</Text>
         </TouchableOpacity>
 
+        {/* Sign In Button */}
         <TouchableOpacity
-          style={styles.signInButton}
+          style={[styles.signInButton, loading && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={loading}
         >
@@ -147,47 +153,31 @@ const LoginScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleGooglePress}
-          disabled={!request || loading}
-        >
-          <Icon name="logo-google" size={24} color={COLORS.danger} />
-          <Text style={styles.socialButtonText}>Sign In with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.socialButton}
-          onPress={handleFacebookSignIn}
-        >
-          <Icon name="logo-facebook" size={24} color="#1877F2" />
-          <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
-        </TouchableOpacity>
-
+        {/* Sign Up Link */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("SignUp")}
+            disabled={loading}
+          >
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Other Login Options */}
         <View style={styles.otherLogins}>
-          <TouchableOpacity onPress={() => navigation.navigate("FEOLogin")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("FEOLogin")}
+            disabled={loading}
+          >
             <Text style={styles.otherLoginText}>FEO Login</Text>
           </TouchableOpacity>
           <Text style={styles.separator}> | </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("AdminLogin")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("AdminLogin")}
+            disabled={loading}
+          >
             <Text style={styles.otherLoginText}>Admin Login</Text>
-          </TouchableOpacity>
-          <Text style={styles.separator}> | </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("researcherLogin")}>
-            <Text style={styles.otherLoginText}>Researcher Login</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -202,7 +192,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    padding: 30,
+    padding: 20,
   },
   header: {
     marginBottom: 20,
@@ -227,6 +217,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: COLORS.secondary,
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.gray,
   },
   formContainer: {
     flex: 1,
@@ -240,13 +235,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: COLORS.dark,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.lightGray,
     borderRadius: 8,
+    backgroundColor: COLORS.white,
+  },
+  inputIcon: {
+    marginLeft: 12,
+  },
+  input: {
+    flex: 1,
     padding: 12,
     fontSize: 16,
-    backgroundColor: COLORS.white,
   },
   passwordContainer: {
     flexDirection: "row",
@@ -282,34 +285,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.lightGray,
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    color: COLORS.gray,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.light,
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  socialButtonText: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.dark,
+  buttonDisabled: {
+    opacity: 0.6,
   },
   footer: {
     flexDirection: "row",
@@ -318,26 +295,28 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: COLORS.gray,
+    fontSize: 15,
   },
   signUpText: {
     color: COLORS.primary,
     fontWeight: "bold",
+    fontSize: 15,
   },
   otherLogins: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   otherLoginText: {
     color: COLORS.secondary,
     fontWeight: "600",
+    fontSize: 14,
   },
   separator: {
     color: COLORS.gray,
+    fontSize: 14,
   },
 });
-
-
 
 export default LoginScreen;

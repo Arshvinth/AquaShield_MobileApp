@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import Icon from "react-native-vector-icons/Ionicons";
 import { feoAPI } from "../../services/api";
 import { COLORS, DEPARTMENTS } from "../../utils/constants";
@@ -20,6 +21,7 @@ const UpdateFEOScreen = ({ route, navigation }) => {
   const { feoId } = route.params;
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     department: "",
@@ -29,7 +31,7 @@ const UpdateFEOScreen = ({ route, navigation }) => {
     nicNo: "",
     email: "",
     officeContact: "",
-    profileImage: null,
+    profileImageBase64: null, // NEW: Store Base64 string
   });
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const UpdateFEOScreen = ({ route, navigation }) => {
         nicNo: feo.nicNo,
         email: feo.email,
         officeContact: feo.officeContact,
-        profileImage: feo.profileImage,
+        profileImageBase64: feo.profileImage?.base64 || null,
       });
     } catch (error) {
       Alert.alert("Error", "Failed to load FEO details");
@@ -63,6 +65,27 @@ const UpdateFEOScreen = ({ route, navigation }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // NEW: Convert image to Base64 using ImageManipulator
+  const convertImageToBase64 = async (uri) => {
+    try {
+      // Manipulate image and get Base64
+      const manipResult = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 500, height: 500 } }], // Resize to 500x500
+        {
+          compress: 0.7,
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true, // Request Base64 output
+        }
+      );
+
+      return manipResult.base64;
+    } catch (error) {
+      console.error("Error converting image to Base64:", error);
+      throw error;
+    }
+  };
+
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -74,22 +97,36 @@ const UpdateFEOScreen = ({ route, navigation }) => {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+    setImageLoading(true);
 
-    if (!result.canceled) {
-      setFormData({
-        ...formData,
-        profileImage: {
-          uri: result.assets[0].uri,
-          type: "image/jpeg",
-          fileName: "profile.jpg",
-        },
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
       });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
+        console.log("📸 Image selected:", asset.uri);
+
+        // Convert to Base64
+        const base64String = await convertImageToBase64(asset.uri);
+        console.log("✅ Image converted to Base64");
+
+        setFormData({
+          ...formData,
+          profileImageBase64: base64String,
+        });
+
+        Alert.alert("Success", "Image selected successfully");
+      }
+    } catch (error) {
+      console.error("❌ Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image");
+    } finally {
+      setImageLoading(false);
     }
   };
 
@@ -110,7 +147,24 @@ const UpdateFEOScreen = ({ route, navigation }) => {
 
     setSubmitting(true);
     try {
-      await feoAPI.updateFEO(feoId, formData);
+      // Prepare data to send (with Base64 image)
+      const dataToSend = {
+        fullName: formData.fullName,
+        department: formData.department,
+        designation: formData.designation,
+        employeeId: formData.employeeId,
+        assignedArea: formData.assignedArea,
+        nicNo: formData.nicNo,
+        email: formData.email,
+        officeContact: formData.officeContact,
+      };
+
+      // Add Base64 image if exists
+      if (formData.profileImageBase64) {
+        dataToSend.profileImageBase64 = formData.profileImageBase64;
+      }
+
+      await feoAPI.updateFEO(feoId, dataToSend);
       Alert.alert("Success", "FEO officer updated successfully", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
@@ -122,6 +176,13 @@ const UpdateFEOScreen = ({ route, navigation }) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const getImageUri = () => {
+    if (formData.profileImageBase64) {
+      return `data:image/jpeg;base64,${formData.profileImageBase64}`;
+    }
+    return null;
   };
 
   if (loading) {
@@ -145,21 +206,27 @@ const UpdateFEOScreen = ({ route, navigation }) => {
 
       <View style={styles.formContainer}>
         <View style={styles.avatarSection}>
-          {formData.profileImage?.url || formData.profileImage?.uri ? (
-            <Image
-              source={{
-                uri: formData.profileImage.uri || formData.profileImage.url,
-              }}
-              style={styles.avatar}
-            />
+          {getImageUri() ? (
+            <Image source={{ uri: getImageUri() }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Icon name="shield" size={40} color={COLORS.gray} />
             </View>
           )}
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Choose files</Text>
+          <TouchableOpacity
+            style={styles.uploadButton}
+            onPress={pickImage}
+            disabled={imageLoading}
+          >
+            {imageLoading ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <Text style={styles.uploadButtonText}>Choose files</Text>
+            )}
           </TouchableOpacity>
+          {formData.profileImageBase64 && (
+            <Text style={styles.imageSelectedText}>✓ Image ready</Text>
+          )}
         </View>
 
         <TextInput
@@ -305,6 +372,11 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: COLORS.white,
     fontSize: 14,
+  },
+  imageSelectedText: {
+    color: COLORS.success,
+    marginTop: 5,
+    fontSize: 12,
   },
   input: {
     borderWidth: 1,

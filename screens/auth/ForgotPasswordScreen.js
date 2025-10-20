@@ -44,20 +44,16 @@ const ForgotPasswordScreen = ({ route, navigation }) => {
 
     setLoading(true);
     try {
-      const response = await authAPI.forgotPassword(email, userType);
+      await authAPI.forgotPassword(email, userType);
 
+      // ✅ UPDATED: Show success message, don't navigate to reset screen
       Alert.alert(
-        "Success",
-        "Password reset instructions have been sent to your email address. Please check your inbox.",
+        "Email Sent! ✅",
+        "Password reset instructions have been sent to your email address. Please check your inbox and click the link to reset your password.",
         [
           {
             text: "OK",
-            onPress: () => {
-              navigation.navigate("ResetPassword", {
-                resetToken: response.data.resetToken,
-                userType,
-              });
-            },
+            onPress: () => navigation.goBack(), // Go back to login
           },
         ]
       );
@@ -72,7 +68,6 @@ const ForgotPasswordScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
-
   return (
     <ScrollView
       style={styles.container}

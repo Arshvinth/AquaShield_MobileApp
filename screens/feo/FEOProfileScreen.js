@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -19,14 +20,20 @@ const FEOProfileScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  // Reload profile whenever screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
   const loadProfile = async () => {
     try {
+      setLoading(true);
       const response = await feoAPI.getFEOProfile();
       setProfile(response.data);
+      console.log("✅ FEO Profile loaded");
+      console.log("📷 Profile Image:", response.data.profileImage);
     } catch (error) {
       console.error("Error loading profile:", error);
       Alert.alert("Error", "Failed to load profile");
@@ -40,6 +47,28 @@ const FEOProfileScreen = ({ navigation }) => {
       { text: "Cancel", style: "cancel" },
       { text: "Logout", onPress: logout, style: "destructive" },
     ]);
+  };
+
+  // NEW: Convert Base64 to displayable URI
+  const getImageUri = () => {
+    console.log("🖼️ Getting image URI...");
+    console.log("Profile Image Object:", profile?.profileImage);
+
+    // Check for Base64 first (new method)
+    if (profile?.profileImage?.base64) {
+      console.log("✅ Using Base64 image");
+      console.log("Base64 length:", profile.profileImage.base64.length);
+      return `data:image/jpeg;base64,${profile.profileImage.base64}`;
+    }
+
+    // Fallback to Cloudinary URL (old method)
+    if (profile?.profileImage?.url) {
+      console.log("✅ Using Cloudinary URL");
+      return profile.profileImage.url;
+    }
+
+    console.log("⚠️ No image found");
+    return null;
   };
 
   if (loading) {
@@ -66,10 +95,13 @@ const FEOProfileScreen = ({ navigation }) => {
 
       <View style={styles.profileSection}>
         <View style={styles.avatarContainer}>
-          {profile?.profileImage?.url ? (
+          {getImageUri() ? (
             <Image
-              source={{ uri: profile.profileImage.url }}
+              source={{ uri: getImageUri() }}
               style={styles.avatar}
+              onError={(e) => {
+                console.error("Image load error:", e.nativeEvent.error);
+              }}
             />
           ) : (
             <View style={styles.avatarPlaceholder}>
@@ -119,6 +151,13 @@ const FEOProfileScreen = ({ navigation }) => {
             <Text style={styles.infoValue}>{profile?.officeContact}</Text>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate("FEOUpdateProfile")}
+        >
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.passwordSection}>
@@ -127,7 +166,7 @@ const FEOProfileScreen = ({ navigation }) => {
           style={styles.changePasswordButton}
           onPress={() => navigation.navigate("ChangePassword")}
         >
-          <Text style={styles.changePasswordButtonText}>Change</Text>
+          <Text style={styles.changePasswordButtonText}>Change Password</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -192,6 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    marginBottom: 20,
   },
   infoRow: {
     paddingVertical: 10,
@@ -210,6 +250,17 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: COLORS.lightGray,
   },
+  editButton: {
+    backgroundColor: COLORS.primary,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  editButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   passwordSection: {
     padding: 20,
   },
@@ -220,15 +271,17 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   changePasswordButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.white,
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.primary,
   },
   changePasswordButtonText: {
-    color: COLORS.white,
+    color: COLORS.primary,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

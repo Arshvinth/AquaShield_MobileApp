@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { adminAPI, feoAPI } from "../../services/api";
 import { COLORS } from "../../utils/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 const AdminDashboardScreen = ({ navigation }) => {
   const { user, logout } = useAuth();
@@ -19,12 +20,15 @@ const AdminDashboardScreen = ({ navigation }) => {
     totalUsers: 0,
     totalFEOs: 0,
     activeUsers: 0,
+    pendingDeletions: 0,
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadStats();
+    }, [])
+  );
 
   const loadStats = async () => {
     try {
@@ -37,6 +41,7 @@ const AdminDashboardScreen = ({ navigation }) => {
         totalUsers: statsResponse.data.totalUsers,
         totalFEOs: feosResponse.data.count,
         activeUsers: statsResponse.data.activeUsers,
+        pendingDeletions: statsResponse.data.pendingDeletions || 0,
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -73,6 +78,24 @@ const AdminDashboardScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Alert Banner for Deletion Requests */}
+      {stats.pendingDeletions > 0 && (
+        <TouchableOpacity
+          style={styles.alertBanner}
+          onPress={() => navigation.navigate("DeletionRequests")}
+        >
+          <Icon name="alert-circle" size={24} color={COLORS.danger} />
+          <View style={styles.alertContent}>
+            <Text style={styles.alertTitle}>
+              {stats.pendingDeletions} Deletion Request
+              {stats.pendingDeletions > 1 ? "s" : ""} Pending
+            </Text>
+            <Text style={styles.alertText}>Tap to review and take action</Text>
+          </View>
+          <Icon name="chevron-forward" size={24} color={COLORS.danger} />
+        </TouchableOpacity>
+      )}
+
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View style={[styles.statIcon, { backgroundColor: "#E3F2FD" }]}>
@@ -89,13 +112,23 @@ const AdminDashboardScreen = ({ navigation }) => {
           <Text style={styles.statNumber}>{stats.totalFEOs}</Text>
           <Text style={styles.statLabel}>Total FEOs</Text>
         </View>
+      </View>
 
+      <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View style={[styles.statIcon, { backgroundColor: "#E8F5E9" }]}>
             <Icon name="checkmark-circle" size={32} color="#4CAF50" />
           </View>
           <Text style={styles.statNumber}>{stats.activeUsers}</Text>
           <Text style={styles.statLabel}>Active Users</Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <View style={[styles.statIcon, { backgroundColor: "#FEE2E2" }]}>
+            <Icon name="alert-circle" size={32} color="#EF4444" />
+          </View>
+          <Text style={styles.statNumber}>{stats.pendingDeletions}</Text>
+          <Text style={styles.statLabel}>Deletion Requests</Text>
         </View>
       </View>
 
@@ -145,6 +178,53 @@ const AdminDashboardScreen = ({ navigation }) => {
             <Text style={styles.actionTitle}>Manage Users</Text>
             <Text style={styles.actionDescription}>
               View and manage registered users
+            </Text>
+          </View>
+          <Icon name="chevron-forward" size={24} color={COLORS.gray} />
+        </TouchableOpacity>
+
+        {/* NEW: Deletion Requests Quick Action */}
+        <TouchableOpacity
+          style={[
+            styles.actionCard,
+            stats.pendingDeletions > 0 && styles.actionCardAlert,
+          ]}
+          onPress={() => navigation.navigate("DeletionRequests")}
+        >
+          <View
+            style={[
+              styles.actionIconContainer,
+              stats.pendingDeletions > 0 && styles.actionIconAlert,
+            ]}
+          >
+            <Icon
+              name="alert-circle"
+              size={28}
+              color={
+                stats.pendingDeletions > 0 ? COLORS.danger : COLORS.primary
+              }
+            />
+            {stats.pendingDeletions > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{stats.pendingDeletions}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.actionContent}>
+            <Text
+              style={[
+                styles.actionTitle,
+                stats.pendingDeletions > 0 && styles.actionTitleAlert,
+              ]}
+            >
+              Deletion Requests
+            </Text>
+            <Text style={styles.actionDescription}>
+              {stats.pendingDeletions > 0
+                ? `${stats.pendingDeletions} pending request${
+                    stats.pendingDeletions > 1 ? "s" : ""
+                  } awaiting review`
+                : "No pending deletion requests"}
             </Text>
           </View>
           <Icon name="chevron-forward" size={24} color={COLORS.gray} />
@@ -205,10 +285,34 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     marginTop: 4,
   },
+  alertBanner: {
+    backgroundColor: "#FEE2E2",
+    padding: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.danger,
+    marginBottom: 10,
+  },
+  alertContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  alertTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: COLORS.danger,
+    marginBottom: 2,
+  },
+  alertText: {
+    fontSize: 13,
+    color: "#991B1B",
+  },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingTop: 15,
   },
   statCard: {
     flex: 1,
@@ -264,6 +368,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  actionCardAlert: {
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.danger,
+    backgroundColor: "#FEF2F2",
+  },
   actionIconContainer: {
     width: 50,
     height: 50,
@@ -272,6 +381,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
+    position: "relative",
+  },
+  actionIconAlert: {
+    backgroundColor: "#FEE2E2",
+  },
+  badge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: COLORS.danger,
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: COLORS.white,
+  },
+  badgeText: {
+    color: COLORS.white,
+    fontSize: 12,
+    fontWeight: "bold",
   },
   actionContent: {
     flex: 1,
@@ -281,6 +412,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.dark,
     marginBottom: 4,
+  },
+  actionTitleAlert: {
+    color: COLORS.danger,
   },
   actionDescription: {
     fontSize: 13,

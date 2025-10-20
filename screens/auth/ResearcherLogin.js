@@ -96,7 +96,6 @@ const ResearcherLogin = ({ navigation }) => {
             <Text style={styles.signInButtonText}>Sign In</Text>
           )}
         </TouchableOpacity>
-
       </View>
     </ScrollView>
   );

@@ -94,7 +94,14 @@ const FEOListScreen = ({ navigation }) => {
     <View style={styles.feoCard}>
       <View style={styles.feoHeader}>
         <View style={styles.feoInfo}>
-          {item.profileImage?.url ? (
+          {item.profileImage?.base64 ? (
+            <Image
+              source={{
+                uri: `data:image/jpeg;base64,${item.profileImage.base64}`,
+              }}
+              style={styles.feoAvatar}
+            />
+          ) : item.profileImage?.url ? (
             <Image
               source={{ uri: item.profileImage.url }}
               style={styles.feoAvatar}

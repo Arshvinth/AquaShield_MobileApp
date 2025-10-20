@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  ActivityIndicator, 
-  SafeAreaView, 
-  StatusBar, 
-  StyleSheet, 
-  LogBox 
-} from 'react-native';
-import * as Font from 'expo-font';
-import { Asset } from 'expo-asset';
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  LogBox,
+} from "react-native";
+import * as Font from "expo-font";
+import { Asset } from "expo-asset";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
-import { AuthProvider } from './context/AuthContext';
-import AppNavigator from './navigation/AppNavigator';
-import { COLORS } from './utils/constants';
-import useNetworkStatus from './src/hooks/useNetworkStatus';
+import { AuthProvider } from "./context/AuthContext";
+import AppNavigator from "./navigation/AppNavigator";
+import { COLORS } from "./utils/constants";
+import useNetworkStatus from "./src/hooks/useNetworkStatus";
 
-LogBox.ignoreLogs(['Setting a timer']); 
+LogBox.ignoreLogs(["Setting a timer"]);
 
 export default function App() {
   const [assetsReady, setAssetsReady] = useState(false);
@@ -26,26 +30,26 @@ export default function App() {
   useEffect(() => {
     const loadAssets = async () => {
       try {
-        console.log('Loading fonts...');
+        console.log("Loading fonts...");
         await Font.loadAsync({
           ...Ionicons.font,
           ...MaterialIcons.font,
           ...MaterialCommunityIcons.font,
         });
-        console.log('Fonts loaded.');
+        console.log("Fonts loaded.");
 
-        console.log('Loading images...');
+        console.log("Loading images...");
         await Asset.loadAsync([
-          require('./assets/AppImages/TopOnboard1.png'),
-          require('./assets/AppImages/TopOnboard2.png'),
-          require('./assets/AppImages/TopOnboard3.png'),
-          require('./assets/AppImages/AquaShieldLogo.png'),
+          require("./assets/AppImages/TopOnboard1.png"),
+          require("./assets/AppImages/TopOnboard2.png"),
+          require("./assets/AppImages/TopOnboard3.png"),
+          require("./assets/AppImages/AquaShieldLogo.png"),
         ]);
-        console.log('Images loaded.');
+        console.log("Images loaded.");
 
         setAssetsReady(true);
       } catch (error) {
-        console.error('Error loading assets:', error);
+        console.error("Error loading assets:", error);
       }
     };
 
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

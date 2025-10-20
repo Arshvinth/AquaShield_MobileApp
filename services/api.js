@@ -102,14 +102,9 @@ export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
   feoLogin: (data) => api.post("/auth/feo-login", data),
-  researcherLogin: (data) => api.post("/auth/researcher-login", data),
   adminLogin: (data) => api.post("/auth/admin-login", data),
   getMe: () => api.get("/auth/me"),
 
-  // NEW: Google Sign In
-  googleSignIn: (idToken) => api.post("/auth/google", { idToken }),
-
-  // Password reset methods
   forgotPassword: (email, userType = "user") => {
     const endpoint =
       userType === "feo"
@@ -130,57 +125,22 @@ export const authAPI = {
 // User APIs
 export const userAPI = {
   getProfile: () => api.get("/users/profile"),
-
-  updateProfile: async (data) => {
-    const formData = createFormData(data);
-    const token = await AsyncStorage.getItem("userToken");
-    return uploadWithXHR(`${API_BASE_URL}/users/profile`, formData, token);
-  },
-
+  updateProfile: (data) => api.put("/users/profile", data),
   changePassword: (data) => api.put("/users/change-password", data),
   deleteAccount: () => api.delete("/users/profile"),
+  requestDeletion: (reason) => api.post("/users/request-deletion", { reason }),
+  cancelDeletionRequest: () => api.delete("/users/cancel-deletion-request"),
 };
 
 // FEO APIs
 export const feoAPI = {
-  createFEO: async (data) => {
-    const formData = createFormData(data);
-    const token = await AsyncStorage.getItem("userToken");
-
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve({ data: JSON.parse(xhr.responseText) });
-        } else {
-          reject(new Error(JSON.parse(xhr.responseText).message || "Failed"));
-        }
-      };
-      xhr.onerror = () => reject(new Error("Network error"));
-      xhr.open("POST", `${API_BASE_URL}/feo`);
-      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-      xhr.send(formData);
-    });
-  },
-
+  createFEO: (data) => api.post("/feo", data),
   getAllFEOs: (params) => api.get("/feo", { params }),
   getFEOById: (id) => api.get(`/feo/${id}`),
-
-  updateFEO: async (id, data) => {
-    const formData = createFormData(data);
-    const token = await AsyncStorage.getItem("userToken");
-    return uploadWithXHR(`${API_BASE_URL}/feo/${id}`, formData, token);
-  },
-
+  updateFEO: (id, data) => api.put(`/feo/${id}`, data),
   deleteFEO: (id) => api.delete(`/feo/${id}`),
   getFEOProfile: () => api.get("/feo/profile/me"),
-
-  updateFEOProfile: async (data) => {
-    const formData = createFormData(data);
-    const token = await AsyncStorage.getItem("userToken");
-    return uploadWithXHR(`${API_BASE_URL}/feo/profile/me`, formData, token);
-  },
-
+  updateFEOProfile: (data) => api.put("/feo/profile/me", data),
   changeFEOPassword: (data) => api.put("/feo/profile/change-password", data),
 };
 
@@ -190,6 +150,12 @@ export const adminAPI = {
   getUserById: (id) => api.get(`/admin/users/${id}`),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   getStats: () => api.get("/admin/stats"),
+
+  // UPDATED: Deletion request management with filter support
+  getDeletionRequests: (status = "all") =>
+    api.get("/admin/deletion-requests", { params: { status } }),
+  approveDeletion: (id) => api.put(`/admin/users/${id}/approve-deletion`),
+  rejectDeletion: (id) => api.put(`/admin/users/${id}/reject-deletion`),
 };
 
 export default api;

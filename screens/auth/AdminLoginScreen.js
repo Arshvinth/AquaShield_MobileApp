@@ -31,7 +31,10 @@ const AdminLoginScreen = ({ navigation }) => {
     const result = await login({ email, password }, "admin");
     setLoading(false);
 
-    if (!result.success) {
+    if (result.success) {
+      // ✅ No need to navigate manually — AuthContext will switch stacks
+      console.log("Admin login successful");
+    } else {
       Alert.alert("Login Failed", result.message);
     }
   };
@@ -99,22 +102,6 @@ const AdminLoginScreen = ({ navigation }) => {
           ) : (
             <Text style={styles.signInButtonText}>Sign In</Text>
           )}
-        </TouchableOpacity>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Icon name="logo-google" size={24} color={COLORS.danger} />
-          <Text style={styles.socialButtonText}>Sign In with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Icon name="logo-facebook" size={24} color="#1877F2" />
-          <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -205,35 +192,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 18,
     fontWeight: "bold",
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.lightGray,
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    color: COLORS.gray,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.light,
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  socialButtonText: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.dark,
   },
 });
 

@@ -1,10 +1,13 @@
 import React from "react";
+import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
 import { COLORS } from "../utils/constants";
+import { useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 // Auth Screens
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -30,20 +33,21 @@ import AddFEOScreen from "../screens/admin/AddFEOScreen";
 import FEOListScreen from "../screens/admin/FEOListScreen";
 import UpdateFEOScreen from "../screens/admin/UpdateFEOScreen";
 import UserListScreen from "../screens/admin/UserListScreen";
+import DeletionRequestsScreen from "../screens/admin/DeletionRequestsScreen";
 
 //Researcher Screens
-import ResearcherBottomTabsBottomTabs from '../navigation/ResearcherBottomTabs';
-import AddSpeciesRequest from '../screens/addSpeciesRequest';
-import ViewOneSpecies from '../screens/viewOneSpecies';
-import ResearcherNotifications from '../screens/researcherNotifications';
-import EditResearcherRequest from '../screens/editResearcherRequest';
-import viewOneSpecies from '../screens/viewOneSpecies';
+import ResearcherBottomTabsBottomTabs from "../navigation/ResearcherBottomTabs";
+import AddSpeciesRequest from "../screens/addSpeciesRequest";
+import ViewOneSpecies from "../screens/viewOneSpecies";
+import ResearcherNotifications from "../screens/researcherNotifications";
+import EditResearcherRequest from "../screens/editResearcherRequest";
+import viewOneSpecies from "../screens/viewOneSpecies";
 
 //welcome screens
-import LaunchScreen from '../screens/LaunchScreen';
-import OnBoarding1 from '../screens/onBoarding1';
-import OnBoarding2 from '../screens/onBoarding2';
-import OnBoarding3 from '../screens/onBoarding3';
+import LaunchScreen from "../screens/LaunchScreen";
+import OnBoarding1 from "../screens/onBoarding1";
+import OnBoarding2 from "../screens/onBoarding2";
+import OnBoarding3 from "../screens/onBoarding3";
 
 //Added By Ashwin
 import ClientBottom from "../navigation/ClientReporterBottomTab";
@@ -92,6 +96,7 @@ const AuthStack = () => (
       component={SignUpScreen}
       options={{ title: "Create Account" }}
     />
+
     <Stack.Screen
       name="FEOLogin"
       component={FEOLoginScreen}
@@ -142,50 +147,59 @@ const UserTabs = () => (
       headerTitleStyle: { fontWeight: "bold" },
     })}
   >
-    {/* <Tab.Screen name="Profile" component={UserProfileScreen} /> */}
+    <Tab.Screen name="Profile" component={UserProfileScreen} />
 
     <Tab.Screen name="ClientHome" component={ClientBottom} />
   </Tab.Navigator>
 );
 
 // User Stack
-const UserStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerStyle: { backgroundColor: COLORS.primary },
-      headerTintColor: COLORS.white,
-      headerTitleStyle: { fontWeight: "bold" },
-    }}
-  >
+const UserStack = () => {
+  const { user } = useAuth();
+  const navigation = useNavigation();
 
-    <Stack.Screen
-      name="UserTabs"
-      component={UserTabs}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="UpdateProfile"
-      component={UpdateProfileScreen}
-      options={{ title: "Update Profile" }}
-    />
-    <Stack.Screen
-      name="ChangePassword"
-      component={ChangePasswordScreen}
-      options={{ title: "Change Password" }}
-    />
-    <Stack.Screen
-      name="ResearcherTabs"
-      component={ResearcherBottomTabsBottomTabs}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="Login"
-      component={LoginScreen}
-      options={{ headerShown: false }}
-    />
-  </Stack.Navigator>
-);
+  useEffect(() => {
+    if (user && user.role === "user" && navigation.isReady()) {
+      navigation.navigate("UserTabs", { screen: "Profile" });
+    }
+  }, [user, navigation]);
 
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: COLORS.primary },
+        headerTintColor: COLORS.white,
+        headerTitleStyle: { fontWeight: "bold" },
+      }}
+    >
+      <Stack.Screen
+        name="UserTabs"
+        component={UserTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UpdateProfile"
+        component={UpdateProfileScreen}
+        options={{ title: "Update Profile" }}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ title: "Change Password" }}
+      />
+      <Stack.Screen
+        name="ResearcherTabs"
+        component={ResearcherBottomTabsBottomTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 // User Stack
 const ResearcherStack = () => (
   <Stack.Navigator
@@ -203,7 +217,7 @@ const ResearcherStack = () => (
     <Stack.Screen
       name="AddSpeciesRequest"
       component={AddSpeciesRequest}
-      options={{ title: 'Add Species Request' }}
+      options={{ title: "Add Species Request" }}
     />
     <Stack.Screen
       name="ViewOneSpecies"
@@ -215,8 +229,8 @@ const ResearcherStack = () => (
       component={ResearcherNotifications}
       options={{
         headerShown: true,
-        headerTitle: 'Notifications',
-        headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+        headerTitle: "Notifications",
+        headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
       }}
     />
     <Stack.Screen
@@ -224,15 +238,15 @@ const ResearcherStack = () => (
       component={EditResearcherRequest}
       options={({ route }) => ({
         title: route.params?.speciesId
-          ? 'Edit Species Request'
-          : 'Add Species Request',
+          ? "Edit Species Request"
+          : "Add Species Request",
       })}
     />
     <Stack.Screen
       name="viewOneSpecies"
       component={viewOneSpecies}
       options={({ route }) => ({
-        title: route.params?.speciesId ? 'View Species' : 'Search Species',
+        title: route.params?.speciesId ? "View Species" : "Search Species",
       })}
     />
   </Stack.Navigator>
@@ -304,6 +318,14 @@ const AdminTabs = () => (
       component={UserListScreen}
       options={{ title: "Users" }}
     />
+    <Tab.Screen
+      name="DeletionRequests"
+      component={DeletionRequestsScreen}
+      options={{
+        title: "Requests",
+        tabBarBadge: null,
+      }}
+    />
   </Tab.Navigator>
 );
 
@@ -334,29 +356,31 @@ const AdminStack = () => (
   </Stack.Navigator>
 );
 
-
 const AppNavigator = () => {
   const { isAuthenticated, user, loading } = useAuth();
 
+  // ✅ Show loading spinner while checking AsyncStorage or user state
   if (loading) {
-    return null; // Or a loading screen
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
   }
 
+  // ✅ Debug — print current auth state to see if context works correctly
+  console.log("Auth state:", { isAuthenticated, user });
+
   const getMainStack = () => {
-    if (!isAuthenticated) {
-      return <AuthStack />;
-    }
+    if (!isAuthenticated) return <AuthStack />;
 
-    if (user?.role === "admin") {
-      return <AdminStack />;
-    }
+    const role = user?.role?.toLowerCase();
+    const type = user?.userType?.toLowerCase();
 
-    if (user?.userType === "feo") {
-      return <FEOStack />;
-    }
-    if (user?.role === "researcher") {
-      return <ResearcherStack />;
-    }
+    if (role === "admin") return <AdminStack />;
+    if (type === "feo") return <FEOStack />;
+    if (role === "researcher") return <ResearcherStack />;
+
     return <UserStack />;
   };
 

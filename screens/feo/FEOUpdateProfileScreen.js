@@ -12,6 +12,7 @@ import {
   Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { feoAPI } from "../../services/api";
@@ -24,7 +25,7 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     officeContact: "",
-    profileImage: null,
+    profileImageBase64: null, // NEW: Store Base64 string
   });
 
   useEffect(() => {
@@ -37,9 +38,9 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
       setFormData({
         fullName: response.data.fullName,
         officeContact: response.data.officeContact,
-        profileImage: response.data.profileImage,
+        profileImageBase64: response.data.profileImage?.base64 || null,
       });
-      console.log("✅ FEO Profile loaded:", response.data);
+      console.log("✅ FEO Profile loaded");
     } catch (error) {
       console.error("❌ Error loading profile:", error);
       Alert.alert("Error", "Failed to load profile");
@@ -65,6 +66,27 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
     return true;
   };
 
+  // NEW: Convert image to Base64 using ImageManipulator
+  const convertImageToBase64 = async (uri) => {
+    try {
+      // Manipulate image and get Base64
+      const manipResult = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 500, height: 500 } }], // Resize to 500x500
+        {
+          compress: 0.7,
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true, // Request Base64 output
+        }
+      );
+
+      return manipResult.base64;
+    } catch (error) {
+      console.error("Error converting image to Base64:", error);
+      throw error;
+    }
+  };
+
   const pickImage = async () => {
     try {
       const hasPermission = await requestPermissions();
@@ -83,11 +105,16 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
         const asset = result.assets[0];
         console.log("📸 Image selected:", asset.uri);
 
+        // Convert to Base64
+        const base64String = await convertImageToBase64(asset.uri);
+        console.log(
+          "✅ Image converted to Base64, length:",
+          base64String.length
+        );
+
         setFormData({
           ...formData,
-          profileImage: {
-            uri: asset.uri,
-          },
+          profileImageBase64: base64String,
         });
 
         Alert.alert("Success", "Image selected successfully");
@@ -108,10 +135,22 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      console.log("📤 Submitting FEO profile update...");
-      const response = await feoAPI.updateFEOProfile(formData);
+      console.log("📤 Submitting FEO profile update with Base64...");
 
-      console.log("✅ FEO Profile updated successfully:", response.data);
+      // Prepare data to send
+      const updateData = {
+        fullName: formData.fullName,
+        officeContact: formData.officeContact,
+      };
+
+      // Add Base64 image if exists
+      if (formData.profileImageBase64) {
+        updateData.profileImageBase64 = formData.profileImageBase64;
+      }
+
+      const response = await feoAPI.updateFEOProfile(updateData);
+
+      console.log("✅ FEO Profile updated successfully");
       await updateUserData(response.data);
 
       Alert.alert("Success", "Profile updated successfully", [
@@ -119,7 +158,6 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
       ]);
     } catch (error) {
       console.error("❌ Error updating profile:", error);
-      console.error("Error response:", error.response?.data);
 
       const errorMessage =
         error.response?.data?.message ||
@@ -133,11 +171,9 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
   };
 
   const getImageUri = () => {
-    if (formData.profileImage?.uri) {
-      return formData.profileImage.uri;
-    }
-    if (formData.profileImage?.url) {
-      return formData.profileImage.url;
+    // NEW: Convert Base64 back to displayable format
+    if (formData.profileImageBase64) {
+      return `data:image/jpeg;base64,${formData.profileImageBase64}`;
     }
     return null;
   };
@@ -181,8 +217,8 @@ const FEOUpdateProfileScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        {formData.profileImage?.uri && (
-          <Text style={styles.imageSelectedText}>✓ New image selected</Text>
+        {formData.profileImageBase64 && (
+          <Text style={styles.imageSelectedText}>✓ Image ready to upload</Text>
         )}
       </View>
 
