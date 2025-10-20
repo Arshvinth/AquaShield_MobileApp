@@ -73,7 +73,7 @@ export function AdminAnalytics() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <AnalyticsFilters />
+        {/* <AnalyticsFilters /> */}
         <KeyMetrics />
         <ChartsGrid frequency={frequency} species={species} status={status} />
       </ScrollView>

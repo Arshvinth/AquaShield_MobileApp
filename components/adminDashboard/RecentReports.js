@@ -19,9 +19,11 @@ const COLORS = {
   success: '#16A34A',
 };
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight } = Dimensions.get('window');
 
 export function RecentReports({ reports }) {
+  const noReportData = !reports || reports.length === 0;
+
   return (
     <View style={styles.card}>
       {/* Card Header */}
@@ -31,14 +33,14 @@ export function RecentReports({ reports }) {
           Latest illegal fishing activity reports
         </Text>
       </View>
-      
-      {/* Card Content */}
-      <View style={styles.cardContent}>
-        {(!reports || reports.length === 0) ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No recent reports</Text>
-          </View>
-        ) : (
+
+      {/* Content */}
+      {noReportData ? (
+        <View style={styles.noDataContainer}>
+          <Text style={styles.noDataText}>No data found (backend not connected)</Text>
+        </View>
+      ) : (
+        <View style={styles.cardContent}>
           <ScrollView
             style={styles.reportsList}
             contentContainerStyle={{ paddingBottom: 8 }}
@@ -47,14 +49,14 @@ export function RecentReports({ reports }) {
           >
             {reports.map((report, idx) => (
               <ReportItem
-                key={report.id}
+                key={report.id || idx}
                 report={report}
                 isLast={idx === reports.length - 1}
               />
             ))}
           </ScrollView>
-        )}
-      </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -65,7 +67,7 @@ function ReportItem({ report, isLast }) {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -76,7 +78,7 @@ function ReportItem({ report, isLast }) {
           <Text style={styles.reportId}>#{report.id}</Text>
         </View>
         <Text style={styles.reportDetails}>
-          {report.species} • {report.location?.description || report.location}
+          {report.species} • {report.location?.description || report.location || 'Unknown location'}
         </Text>
         <Text style={styles.reportDate}>
           {report.date ? formatDate(report.date) : 'Date not available'}
@@ -122,18 +124,19 @@ const styles = StyleSheet.create({
   cardContent: {
     flex: 1,
     minHeight: 120,
-    maxHeight: screenHeight * 0.4, // 40% of screen height for scrollable area
+    maxHeight: screenHeight * 0.4,
   },
-  emptyState: {
+  noDataContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: 120,
   },
-  emptyText: {
+  noDataText: {
     fontSize: 14,
     color: COLORS.mutedForeground,
     textAlign: 'center',
+    fontStyle: 'italic',
   },
   reportsList: {
     flexGrow: 0,
@@ -173,9 +176,7 @@ const styles = StyleSheet.create({
     color: COLORS.mutedForeground,
     opacity: 0.8,
   },
-  statusContainer: {
-    // Status badge container
-  },
+  statusContainer: {},
 });
 
 export default RecentReports;

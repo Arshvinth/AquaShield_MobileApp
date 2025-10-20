@@ -149,6 +149,22 @@ const AdminDashboardScreen = ({ navigation }) => {
           </View>
           <Icon name="chevron-forward" size={24} color={COLORS.gray} />
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionCard}
+          onPress={() => navigation.navigate("ReportsAnalytics")}
+        >
+          <View style={styles.actionIconContainer}>
+            <Icon name="analytics" size={28} color={COLORS.primary} />
+          </View>
+          <View style={styles.actionContent}>
+            <Text style={styles.actionTitle}>Report Analytics & Statistics</Text>
+            <Text style={styles.actionDescription}>
+              View and manage user reports and analytics
+            </Text>
+          </View>
+          <Icon name="chevron-forward" size={24} color={COLORS.gray} />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.recentActivity}>
