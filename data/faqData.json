@@ -1,0 +1,44 @@
+{
+  "faqs": [
+    {
+      "id": 1,
+      "question": "How do I report illegal fishing?",
+      "answer": "Go to the Reports tab and click 'Add New Report'. Fill in species, location, date, and upload evidence photos."
+    },
+    {
+      "id": 2,
+      "question": "What information do I need for a report?",
+      "answer": "You need: species type, exact location, date/time, photos/videos as evidence, and description of the activity."
+    },
+    {
+      "id": 3,
+      "question": "How long does review take?",
+      "answer": "Reports are typically reviewed within 24 hours. You'll receive status updates in the app."
+    },
+    {
+      "id": 4,
+      "question": "What species are protected?",
+      "answer": "Protected species include Bluefin Tuna, Atlantic Salmon, Cod, Sharks, Sea Turtles, and Dolphins. Check Resources for full list."
+    },
+    {
+      "id": 5,
+      "question": "Is my report anonymous?",
+      "answer": "Yes, reports are confidential. Only necessary details are shared with authorities for investigation."
+    },
+    {
+      "id": 6,
+      "question": "What if it's an emergency?",
+      "answer": "For immediate threats, contact local authorities first. Use emergency hotlines in your region."
+    },
+    {
+      "id": 7,
+      "question": "Can I edit my report?",
+      "answer": "Yes, you can edit pending reports. Go to Reports tab, find your report and click edit."
+    },
+    {
+      "id": 8,
+      "question": "How do I track report status?",
+      "answer": "Go to Reports tab to see all your submissions with current status (Pending, Confirmed, Rejected)."
+    }
+  ]
+}
