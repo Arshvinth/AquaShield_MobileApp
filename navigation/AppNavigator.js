@@ -30,6 +30,8 @@ import AddFEOScreen from "../screens/admin/AddFEOScreen";
 import FEOListScreen from "../screens/admin/FEOListScreen";
 import UpdateFEOScreen from "../screens/admin/UpdateFEOScreen";
 import UserListScreen from "../screens/admin/UserListScreen";
+import ReportsAnalyticsScreen from "../screens/AdminDashboard";
+import AdminBottomTabs from "./AdminBottomTabs";
 
 //Researcher Screens
 import ResearcherBottomTabsBottomTabs from '../navigation/ResearcherBottomTabs';
@@ -278,6 +280,8 @@ const AdminTabs = () => (
           iconName = focused ? "people" : "people-outline";
         } else if (route.name === "UserList") {
           iconName = focused ? "person" : "person-outline";
+        } else if (route.name === "ReportsAnalytics") {
+          iconName = focused ? "analytics" : "analytics";
         }
 
         return <Icon name={iconName} size={size} color={color} />;
@@ -303,6 +307,11 @@ const AdminTabs = () => (
       name="UserList"
       component={UserListScreen}
       options={{ title: "Users" }}
+    />
+    <Tab.Screen
+      name="ReportsAnalytics"
+      component={AdminBottomTabs}
+      options={{ title: "Report Analytics" }}
     />
   </Tab.Navigator>
 );
