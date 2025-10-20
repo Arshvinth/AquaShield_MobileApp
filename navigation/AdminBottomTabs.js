@@ -6,9 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Admin Screens (you'll create these)
 import AdminDashboard from '../screens/AdminDashboard';
-import AdminUsers from '../screens/AdminUsers';
 import AdminReports from '../screens/AdminReports';
-import AdminAddFEO from '../screens/AdminAddFEO';
 import AdminAnalytics from '../screens/AdminAnalytics';
 
 const Tab = createBottomTabNavigator();
@@ -55,12 +53,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             iconType = 'material';
           } else if (route.name === 'Analytics') {
             iconName = 'analytics';
-          } else if (route.name === 'Users') {
-            iconName = 'people';
-          } else if (route.name === 'Reports') {
+          }  else if (route.name === 'Reports') {
             iconName = 'document-text';
-          } else if (route.name === 'Add FEO') {
-            iconName = 'add-circle';
           }
 
           return (
@@ -103,10 +97,8 @@ export default function AdminBottomTabs() {
       tabBar={props => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Analytics" component={AdminAnalytics} />
-      <Tab.Screen name="Users" component={AdminUsers} />
       <Tab.Screen name="Dashboard" component={AdminDashboard} />
       <Tab.Screen name="Reports" component={AdminReports} />
-      <Tab.Screen name="Add FEO" component={AdminAddFEO} />
     </Tab.Navigator>
   );
 }
