@@ -125,7 +125,7 @@ const ClientStack = () => (
     screenOptions={{
       headerStyle: { backgroundColor: COLORS.primary },
       headerTintColor: COLORS.white,
-      headerTitleStyle: { fontWeight: "bold" },
+      headerTitleStyle: { fontWeight: "bold" }
     }}
   >
     <Stack.Screen
