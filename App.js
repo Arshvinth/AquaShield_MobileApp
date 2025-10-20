@@ -15,6 +15,7 @@ import { AuthProvider } from './context/AuthContext';
 import AppNavigator from './navigation/AppNavigator';
 import { COLORS } from './utils/constants';
 import useNetworkStatus from './src/hooks/useNetworkStatus';
+import Chatbot from './components/Chatbot';
 
 LogBox.ignoreLogs(['Setting a timer']); 
 
@@ -65,6 +66,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
         <AppNavigator />
+        <Chatbot />
       </SafeAreaView>
     </AuthProvider>
   );
