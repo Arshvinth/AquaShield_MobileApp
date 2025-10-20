@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   // Fixed FAB Container - KEY FIX
   fabContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 100,
     right: 20,
     zIndex: 1000,
     // These ensure it stays above everything
