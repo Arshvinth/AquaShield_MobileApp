@@ -53,7 +53,7 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <Layout title="ADMIN DASHBOARD">
+      <Layout title="DASHBOARD">
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#146C94" />
           <Text style={styles.loadingText}>Loading dashboard...</Text>
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <Layout title="ADMIN DASHBOARD">
+    <Layout title="DASHBOARD">
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
