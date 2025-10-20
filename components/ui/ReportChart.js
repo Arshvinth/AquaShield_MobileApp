@@ -3,10 +3,11 @@ import { ViewPagerAndroidBase } from 'react-native';
 import { Dimensions, View, StyleSheet, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { BarChart } from 'react-native-chart-kit'
 import { getAllReports } from '../../src/services/reportService';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function ReportChart() {
-
+    const { userId, isAuthenticated } = useAuth();
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,7 +47,7 @@ export default function ReportChart() {
             setLoading(true);
             setError(null);
             console.log('Fetching all reports...');
-            const types = await getAllReports();
+            const types = await getAllReports(userId);
             const processData = processReportData(types);
             setChartData(processData);
         } catch (err) {

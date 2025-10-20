@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { getAllReports } from '../../src/services/reportService';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RecentData() {
 
+    const { userId, isAuthenticated } = useAuth();
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,7 +13,7 @@ export default function RecentData() {
     const fetchReports = async () => {
         try {
             setLoading(true);
-            const data = await getAllReports();
+            const data = await getAllReports(userId);
 
             const sortedReports = data.sort(
                 (a, b) => new Date(b.date) - new Date(a.date)
@@ -22,7 +24,7 @@ export default function RecentData() {
             setReports(recentReports);
         } catch (err) {
             console.error("Error Fetching reports", err);
-            setError("Failed to load reports");
+            setError("No Recent eports Founds");
         } finally {
             setLoading(false);
         }
@@ -143,9 +145,20 @@ const styles = StyleSheet.create({
 
 
     },
+    errorText: {
+        color: "#146C96",
+        textAlign: "center",
+        padding: 20
+    },
     header: {
         fontWeight: "bold",
         fontSize: 15,
+    },
+    headerTitle: {
+        color: "#146C96",
+        fontWeight: "bold",
+        margin: 10,
+        fontSize: 16
     },
     statusCell: {
         flex: 1,

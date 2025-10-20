@@ -10,6 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const userId = user?._id || user?.id;
+
   useEffect(() => {
     loadUser();
   }, []);
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         response = await authAPI.adminLogin(credentials);
       } else if (loginType === "feo") {
         response = await authAPI.feoLogin(credentials);
-      }else if (loginType === "researcher") {
+      } else if (loginType === "researcher") {
         response = await authAPI.researcherLogin(credentials);
       } else {
         response = await authAPI.login(credentials);
@@ -214,6 +216,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        userId,
         loading,
         isAuthenticated,
         login,

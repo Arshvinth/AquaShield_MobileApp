@@ -120,6 +120,40 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
+const ClientStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerStyle: { backgroundColor: COLORS.primary },
+      headerTintColor: COLORS.white,
+      headerTitleStyle: { fontWeight: "bold" },
+    }}
+  >
+    <Stack.Screen
+      name="ClientTabs"
+      component={ClientBottom}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="UpdateProfile"
+      component={UpdateProfileScreen}
+      options={{ title: "Update Profile" }}
+    />
+
+    <Stack.Screen
+      name="ChangePassword"
+      component={ChangePasswordScreen}
+      options={{ title: "Change Password" }}
+    />
+    <Stack.Screen
+      name="UserProfile"
+      component={UserProfileScreen}
+      options={{ title: "My Profile" }}
+    />
+  </Stack.Navigator>
+);
+
+
+
 // User Tab Navigator
 const UserTabs = () => (
   <Tab.Navigator
@@ -142,9 +176,9 @@ const UserTabs = () => (
       headerTitleStyle: { fontWeight: "bold" },
     })}
   >
-    {/* <Tab.Screen name="Profile" component={UserProfileScreen} /> */}
+    <Tab.Screen name="Profile" component={UserProfileScreen} />
 
-    <Tab.Screen name="ClientHome" component={ClientBottom} />
+
   </Tab.Navigator>
 );
 
@@ -357,7 +391,7 @@ const AppNavigator = () => {
     if (user?.role === "researcher") {
       return <ResearcherStack />;
     }
-    return <UserStack />;
+    return <ClientStack />;
   };
 
   return <NavigationContainer>{getMainStack()}</NavigationContainer>;

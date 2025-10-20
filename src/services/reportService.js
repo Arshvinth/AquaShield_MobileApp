@@ -1,9 +1,9 @@
 import { apiClient } from "../api/apiClient"
 
-export const createNewReport = async (reportData) => {
+export const createNewReport = async (reportData, userId) => {
 
     const formData = new FormData();
-
+    formData.append('userId', userId);
     formData.append('locationInfo', JSON.stringify(reportData.locationInfo));
     formData.append('incidentInfo', JSON.stringify(reportData.incidentInfo));
     formData.append('personalInfo', JSON.stringify(reportData.personalInfo));
@@ -21,6 +21,7 @@ export const createNewReport = async (reportData) => {
 
 
     console.log("Sending FormData with:", {
+        userId: userId,
         location: reportData.locationInfo,
         incident: reportData.incidentInfo,
         personal: reportData.personalInfo,
@@ -45,9 +46,10 @@ export const getIncidentType = async () => {
     }
 }
 
-export const getAllReports = async () => {
+export const getAllReports = async (userId) => {
     try {
-        const response = await apiClient("/api/report/getReports");
+        console.log(userId);
+        const response = await apiClient(`/api/report/getReports/${userId}`);
         return response.data || response;
     } catch (error) {
         console.log("Error fetching incident Types:", error);
