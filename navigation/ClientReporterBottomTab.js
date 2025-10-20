@@ -11,10 +11,6 @@ import ClientReportIncident from "../screens/clientReporter/clientReportIncident
 import MyReport from "../screens/clientReporter/myReport";
 import Notification from "../screens/clientReporter/Notification";
 import ClientProfile from "../screens/clientReporter/ClientProfile";
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from '../context/AuthContext';
 import UserProfileScreen from '../screens/user/UserProfileScreen';
 
