@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   headerRightContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 12,
   },
   profileButton: {
     padding: 2,
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    marginTop:20
   },
   customHeaderTitle: {
     fontSize: 20,

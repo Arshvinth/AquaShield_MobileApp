@@ -23,6 +23,7 @@ import ChangePasswordScreen from "../screens/user/ChangePasswordScreen";
 // FEO Screens
 import FEOProfileScreen from "../screens/feo/FEOProfileScreen";
 import FEOUpdateProfileScreen from "../screens/feo/FEOUpdateProfileScreen";
+import FeoBottom from "../navigation/FEOBottomNavigation";
 
 // Admin Screens
 import AdminDashboardScreen from "../screens/admin/AdminDashboardScreen";
@@ -32,6 +33,7 @@ import UpdateFEOScreen from "../screens/admin/UpdateFEOScreen";
 import UserListScreen from "../screens/admin/UserListScreen";
 import ReportsAnalyticsScreen from "../screens/AdminDashboard";
 import AdminBottomTabs from "./AdminBottomTabs";
+import AdminAnalytics from "../screens/AdminAnalytics";
 
 //Researcher Screens
 import ResearcherBottomTabsBottomTabs from '../navigation/ResearcherBottomTabs';
@@ -283,6 +285,11 @@ const FEOStack = () => (
       headerTitleStyle: { fontWeight: "bold" },
     }}
   >
+     <Stack.Screen
+      name="FeoTabs"
+      component={FeoBottom}
+      options={{ headerShown: false }}
+    />
     <Stack.Screen
       name="FEOProfile"
       component={FEOProfileScreen}
@@ -314,7 +321,7 @@ const AdminTabs = () => (
           iconName = focused ? "people" : "people-outline";
         } else if (route.name === "UserList") {
           iconName = focused ? "person" : "person-outline";
-        } else if (route.name === "ReportsAnalytics") {
+        } else if (route.name === "AdminBottomTabs") {
           iconName = focused ? "analytics" : "analytics";
         }
 
@@ -343,10 +350,20 @@ const AdminTabs = () => (
       options={{ title: "Users" }}
     />
     <Tab.Screen
-      name="ReportsAnalytics"
+      name="AdminBottomTabs"
       component={AdminBottomTabs}
-      options={{ title: "Report Analytics" }}
+      options={{
+        title: "Admin Analytics",
+        tabBarStyle: {
+          marginTop: -50 //Adjuster to align both bottom tabs
+        }
+      }}
     />
+    {/* <Tab.Screen
+      name="AdminAnalytics"
+      component={AdminAnalytics}
+      options={{ title: "Admin Analytics" }}
+    /> */}
   </Tab.Navigator>
 );
 
@@ -373,6 +390,11 @@ const AdminStack = () => (
       name="UpdateFEO"
       component={UpdateFEOScreen}
       options={{ title: "Update FEO Officer" }}
+    />
+    <Stack.Screen
+      name="AdminAnalytics"
+      component={AdminAnalytics}
+      options={{ title: "Admin Analytics" }}
     />
   </Stack.Navigator>
 );

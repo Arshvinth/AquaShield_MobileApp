@@ -147,7 +147,7 @@ const LoginScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        <View style={styles.divider}>
+        {/* <View style={styles.divider}>
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>Or</Text>
           <View style={styles.dividerLine} />
@@ -168,7 +168,7 @@ const LoginScreen = ({ navigation }) => {
         >
           <Icon name="logo-facebook" size={24} color="#1877F2" />
           <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>

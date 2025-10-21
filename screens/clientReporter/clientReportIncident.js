@@ -12,7 +12,8 @@ import { saveReportOffline } from '../../src/services/offlineService';
 import { useNavigation } from '@react-navigation/native';
 import { createNotification } from '../../src/services/notificationService';
 import { useAuth } from '../../context/AuthContext';
-
+import axios from 'axios';
+import { API_BASE_URL } from '../../config';
 
 export default function ClientReportIncident() {
 
@@ -47,6 +48,7 @@ export default function ClientReportIncident() {
     const [incidentType, setIncidentType] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [speciesTypes, setSpeciesTypes] = useState([]);
 
     const speciesImg = require("../../assets/shark.jpeg");
 
@@ -63,8 +65,7 @@ export default function ClientReportIncident() {
         { id: 10, name: "Foreign vessel intrusion", requiresSpecies: true }
     ];*/}
 
-
-
+    /*
     const speciesTypes = [
         "Tuna",
         "Shark",
@@ -72,9 +73,34 @@ export default function ClientReportIncident() {
         "Sea Cucumber",
         "Ornamental Fish"
     ];
+    */
 
     useEffect(() => {
         fetchIncidentTypes();
+
+        //Fetch the species
+        const fetchSpecies = async () => {
+            try {
+                const { data } = await axios.get(`${API_BASE_URL}/species/getAllSpecies`);
+
+                if(data != null && data.length > 0){
+                    let speciesNamelist = [];
+                    data.map(value => {
+                        if(value.CommonName){
+                            speciesNamelist.push({ speciesLabel: value.CommonName, speciesId: value._id });
+                        }
+                    });
+                    console.log('LABEL : ', speciesNamelist)
+                    setSpeciesTypes(speciesNamelist);
+                }
+                
+            } catch (err) {
+                console.error('Failed to fetch species', err);
+                Alert.alert('Error', 'Unable to fetch species');
+            }
+        };
+
+        fetchSpecies();
 
     }, []);
 
@@ -321,14 +347,14 @@ export default function ClientReportIncident() {
                                         showsHorizontalScrollIndicator={false}
                                         style={styles.speciesScroll}>
                                         <View style={styles.speciesContainer}>
-                                            {speciesTypes.map((species, index) => (
+                                            {speciesTypes.map((item, key) => (
                                                 <TouchableOpacity
-                                                    key={index}
+                                                    key={item.speciesId}
                                                     style={[
                                                         styles.speciesCard,
-                                                        formData.incidentInfo.species === species && styles.selectSpeciesCard
+                                                        formData.incidentInfo.species == item.speciesId && styles.selectSpeciesCard
                                                     ]}
-                                                    onPress={() => handleSpecieSelect(species)}
+                                                    onPress={() => handleSpecieSelect(item.speciesId)}
                                                 >
                                                     <Image
                                                         source={speciesImg}
@@ -336,9 +362,9 @@ export default function ClientReportIncident() {
                                                     />
                                                     <Text style={[
                                                         styles.speciesText,
-                                                        formData.incidentInfo.species === species && styles.selectedSpeciesText
+                                                        formData.incidentInfo.species === item.speciesId && styles.selectedSpeciesText
                                                     ]}>
-                                                        {species}
+                                                        {item.speciesLabel}
                                                     </Text>
                                                 </TouchableOpacity>
                                             ))}

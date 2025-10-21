@@ -106,7 +106,7 @@ const FEOLoginScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        <View style={styles.divider}>
+        {/* <View style={styles.divider}>
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>Or</Text>
           <View style={styles.dividerLine} />
@@ -120,7 +120,7 @@ const FEOLoginScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.socialButton}>
           <Icon name="logo-facebook" size={24} color="#1877F2" />
           <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );

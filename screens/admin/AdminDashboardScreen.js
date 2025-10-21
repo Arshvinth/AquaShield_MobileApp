@@ -152,7 +152,7 @@ const AdminDashboardScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.actionCard}
-          onPress={() => navigation.navigate("ReportsAnalytics")}
+          onPress={() => navigation.navigate("AdminBottomTabs")}
         >
           <View style={styles.actionIconContainer}>
             <Icon name="analytics" size={28} color={COLORS.primary} />

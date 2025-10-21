@@ -6,6 +6,7 @@ import feoReports from "../screens/feo/feoReports";
 import feoHome from "../screens/feo/feoHome";
 import feoProfile from "../screens/feo/feoProfile";
 import Notification from "../screens/clientReporter/Notification";
+import FEOProfileScreen from "../screens/feo/FEOProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -138,8 +139,8 @@ export default function FeoBottom() {
                 }}
             />
             <Tab.Screen
-                name="Profile"
-                component={feoProfile}
+                name="FEOProfile"
+                component={FEOProfileScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ width: 120, alignItems: "center", justifyContent: "center", top: 10 }}>

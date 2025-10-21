@@ -1,5 +1,5 @@
 // export const API_BASE_URL = "http://192.168.1.116:8081/api";
-export const API_BASE_URL = "http://192.168.1.30:8081/api";
+export const API_BASE_URL = "http://10.24.39.229:8081/api";
 
 export const COLORS = {
   primary: "#00A5E3",
